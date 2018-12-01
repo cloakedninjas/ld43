@@ -1,6 +1,6 @@
 module LD43.Entity {
   export class Food extends Phaser.Sprite {
-    static UNIT_SIZE: number = 109; // GOD DAMN YOU ANNA!
+    static UNIT_SIZE: number = 106;
 
     game: Game;
 

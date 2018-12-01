@@ -9,7 +9,8 @@ module LD43.State {
     bg: Phaser.Sprite;
     buttons: {
       bagR: Phaser.Button,
-      fridgeL: Phaser.Button
+      fridgeL: Phaser.Button,
+      fridgeR: Phaser.Button
     };
     location: number;
 
@@ -31,6 +32,7 @@ module LD43.State {
 
     currentFood: Entity.Food;
     markerGroup: Phaser.Group;
+    moveRecalcRequired: boolean = true;
 
     create() {
       this.bg = this.add.sprite(0, 0, 'bg');
@@ -38,19 +40,29 @@ module LD43.State {
       this.game.camera.bounds.height = this.bg.height;
 
       this.buttons = {
-        bagR: new Phaser.Button(this.game, 740, 500, 'arrow', this.panTo.bind(this, Game.LOCATION_FRIDGE)),
-        fridgeL: new Phaser.Button(this.game, 810, 500, 'arrow', this.panTo.bind(this, Game.LOCATION_BAG))
+        bagR: new Phaser.Button(this.game, 763, 725, 'arrow', this.panTo.bind(this, Game.LOCATION_FRIDGE)),
+        fridgeL: new Phaser.Button(this.game, 836, 725, 'arrow', this.panTo.bind(this, Game.LOCATION_BAG)),
+        fridgeR: new Phaser.Button(this.game, 1563, 725, 'arrow', this.panTo.bind(this, Game.LOCATION_BAG))
       };
 
       for (const button in this.buttons) {
-        this.add.existing(this.buttons[button]);
+        let b = this.buttons[button];
+
+        b.anchor.set(0.5);
+        this.add.existing(b);
       }
+
+      this.buttons.fridgeL.scale.x = -1;
+
+      const size6 = (6 * Entity.Food.UNIT_SIZE),
+        size4 = (4 * Entity.Food.UNIT_SIZE),
+        shelfX = 880;
 
       this.storageLocation = {
         fridge: {
-          top: new Phaser.Rectangle(881, 163, 638, 208),
-          middle: new Phaser.Rectangle(881, 163, 638, 208),
-          bottom: new Phaser.Rectangle(881, 163, 638, 208)
+          top: new Phaser.Rectangle(shelfX, 163, size6, (2 * Entity.Food.UNIT_SIZE)),
+          middle: new Phaser.Rectangle(shelfX, 406, size6, size4),
+          bottom: new Phaser.Rectangle(shelfX, 858, size6, size4)
         }
       };
 
@@ -125,32 +137,42 @@ module LD43.State {
 
     onMove(pointer: Phaser.Pointer) {
       const px = pointer.x + this.camera.x,
-            py = pointer.y + this.camera.y;
+        py = pointer.y + this.camera.y;
+
+      let storageLocation,
+        storage;
 
       switch (this.location) {
         case Game.LOCATION_FRIDGE:
 
           if (this.storageLocation.fridge.top.contains(px, py)) {
-            // get map
-
-            // get closest cell to pointer
-
-            let x = Math.floor((px - this.storageLocation.fridge.top.x) / Entity.Food.UNIT_SIZE),
-                y = Math.floor((py - this.storageLocation.fridge.top.y) / Entity.Food.UNIT_SIZE);
-
-            if (this.storage.fridge.top[x][y] === 1) {
-              this.renderPlaceMarkerAt(this.storageLocation.fridge.top, x, y);
-            }
-
-            // top shelf
+            storageLocation = this.storageLocation.fridge.top;
+            storage = this.storage.fridge.top;
+          } else if (this.storageLocation.fridge.middle.contains(px, py)) {
+            storageLocation = this.storageLocation.fridge.middle;
+            storage = this.storage.fridge.middle;
           } else {
-            // bottom shelf
+            storageLocation = this.storageLocation.fridge.bottom;
+            storage = this.storage.fridge.bottom;
+          }
+
+          // get closest cell to pointer
+
+          let x = Math.floor((px - storageLocation.x) / Entity.Food.UNIT_SIZE),
+            y = Math.floor((py - storageLocation.y) / Entity.Food.UNIT_SIZE),
+            cell = storage[x][y];
+
+          if (cell === 1) {
+            // only attempt marker placement if arrow above valid cell
+            this.renderPlaceMarkerAt(storageLocation, x, y);
           }
           break;
       }
     }
 
     renderPlaceMarkerAt(storageLocation, x, y) {
+      // todo, optimise
+
       this.markerGroup.x = storageLocation.x + (x * Entity.Food.UNIT_SIZE);
       this.markerGroup.y = storageLocation.y + (y * Entity.Food.UNIT_SIZE);
     }
