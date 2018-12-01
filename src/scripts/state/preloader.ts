@@ -3,6 +3,9 @@ module LD43.State {
     loadingBar: Entity.PreloadBar;
 
     preload() {
+      const logo = this.add.sprite(this.game.width / 2, 200, 'phaser');
+      logo.anchor.x = 0.5;
+
       this.loadingBar = new Entity.PreloadBar(this.game);
 
       const img = [

@@ -11,7 +11,8 @@ module LD43 {
         scaleMode: Phaser.ScaleManager.SHOW_ALL
       });
 
-      this.state.add('preloader', State.Preloader, true);
+      this.state.add('boot', State.Boot, true);
+      this.state.add('preloader', State.Preloader);
       this.state.add('game', State.Game);
     }
 
