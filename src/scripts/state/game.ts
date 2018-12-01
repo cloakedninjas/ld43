@@ -160,11 +160,17 @@ module LD43.State {
 
           let x = Math.floor((px - storageLocation.x) / Entity.Food.UNIT_SIZE),
             y = Math.floor((py - storageLocation.y) / Entity.Food.UNIT_SIZE),
+            cell;
+
+          try {
             cell = storage[x][y];
+          } catch (e){}
 
           if (cell === 1) {
             // only attempt marker placement if arrow above valid cell
             this.renderPlaceMarkerAt(storageLocation, x, y);
+          } else {
+            this.hidePlaceMaker();
           }
           break;
       }
@@ -173,8 +179,13 @@ module LD43.State {
     renderPlaceMarkerAt(storageLocation, x, y) {
       // todo, optimise
 
+      this.markerGroup.visible = true;
       this.markerGroup.x = storageLocation.x + (x * Entity.Food.UNIT_SIZE);
       this.markerGroup.y = storageLocation.y + (y * Entity.Food.UNIT_SIZE);
+    }
+
+    hidePlaceMaker() {
+      this.markerGroup.visible = false;
     }
   }
 }
