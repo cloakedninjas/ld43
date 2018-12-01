@@ -30,13 +30,17 @@ module LD43.State {
       }
     };
 
+    foodPlaceable: boolean;
     currentFood: Entity.Food;
     markerGroup: Phaser.Group;
     prevHover: {
+      storageLocation: Phaser.Rectangle,
       storage: number[][],
       x: number,
       y: number,
     };
+
+    storedFood: Entity.Food[];
 
     create() {
       this.bg = this.add.sprite(0, 0, 'bg');
@@ -101,6 +105,7 @@ module LD43.State {
 
       this.prevHover = {
         storage: null,
+        storageLocation: null,
         x: null,
         y: null,
       };
@@ -108,6 +113,9 @@ module LD43.State {
       this.markerGroup = new Phaser.Group(this.game);
       this.add.existing(this.markerGroup);
 
+      this.storedFood = [];
+
+      // TODO - change
       let f = new Entity.Food(this.game, 10, 10, 'food_block');
       this.add.existing(f);
 
@@ -122,7 +130,8 @@ module LD43.State {
         });
       });
 
-      this.input.addMoveCallback(this.onMove, this);
+      this.input.addMoveCallback(this.onPointerMove, this);
+      this.input.onDown.add(this.onPointerDown, this);
 
       window['g'] = this;
     }
@@ -147,7 +156,11 @@ module LD43.State {
       }, this);
     }
 
-    onMove(pointer: Phaser.Pointer) {
+    onPointerMove(pointer: Phaser.Pointer) {
+      if (this.currentFood === null) {
+        return;
+      }
+
       const px = pointer.x + this.camera.x,
         py = pointer.y + this.camera.y;
 
@@ -191,6 +204,18 @@ module LD43.State {
       }
     }
 
+    onPointerDown() {
+      if (this.location !== Game.LOCATION_FRIDGE) {
+        return;
+      }
+
+      if (this.currentFood !== null && this.foodPlaceable) {
+        this.placeFood();
+      } else {
+        // nu-uh SFX
+      }
+    }
+
     renderPlaceMarkerAt(storageLocation: Phaser.Rectangle, storage: number[][], x, y) {
       if (this.prevHover.storage === storage &&
         this.prevHover.x === x &&
@@ -199,8 +224,11 @@ module LD43.State {
       }
 
       this.prevHover.storage = storage;
+      this.prevHover.storageLocation = storageLocation;
       this.prevHover.x = x;
       this.prevHover.y = y;
+
+      this.foodPlaceable = true;
 
       // match up place marker cells with storage cells
 
@@ -218,6 +246,7 @@ module LD43.State {
               markerCell.loadTexture('green_block');
             } else {
               markerCell.loadTexture('red_block');
+              this.foodPlaceable = false;
             }
           }
         });
@@ -230,6 +259,23 @@ module LD43.State {
 
     hidePlaceMaker() {
       this.markerGroup.visible = false;
+    }
+
+    placeFood() {
+      this.storedFood.push(this.currentFood);
+      this.currentFood.drop();
+
+      let x = this.prevHover.storageLocation.x,
+        y = this.prevHover.storageLocation.y;
+
+      x += Entity.Food.UNIT_SIZE * this.prevHover.x;
+      y += Entity.Food.UNIT_SIZE * this.prevHover.y;
+
+      x += this.currentFood.width / 2;
+      y += this.currentFood.height / 2;
+
+      this.currentFood.position.set(x, y);
+      this.currentFood = null;
     }
   }
 }
