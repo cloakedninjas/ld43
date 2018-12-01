@@ -6,7 +6,8 @@ module LD43.State {
       this.loadingBar = new Entity.PreloadBar(this.game);
 
       const img = [
-        'bg'
+        'bg', 'food_block', 'green_block', 'bag',
+        'arrow'
       ];
 
       img.forEach((file) => {
