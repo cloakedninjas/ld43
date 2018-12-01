@@ -9,14 +9,43 @@ module LD43.State {
       this.loadingBar = new Entity.PreloadBar(this.game);
 
       const img = [
-        'bg', 'food_block', 'green_block', 'red_block',
-        'arrow'
+        'bg', 'food_block', 'green_block', 'red_block', 'arrow'
       ];
 
       const json = ['food'];
+      const music = ['title'];
+
+      /*const manifest = {
+        images: [
+          'bg', 'food_block', 'green_block', 'red_block',
+          'arrow'
+        ],
+        music: ['title'],
+        data: ['food']
+      };
+
+      const ext = {
+        images: 'png',
+        music: 'mp3',
+        data: 'json'
+      };
+
+      for (const type in manifest) {
+        let files = manifest[type];
+
+        files.forEach((file) => {
+          this.load.image(file, 'assets/' + type + '/' + file + '.' + ext[type]);
+        });
+      }*/
+
+      //
 
       img.forEach((file) => {
         this.load.image(file, 'assets/images/' + file + '.png');
+      });
+
+      music.forEach((file) => {
+        this.load.audio(file, 'assets/music/' + file + '.mp3');
       });
 
       json.forEach((file) => {

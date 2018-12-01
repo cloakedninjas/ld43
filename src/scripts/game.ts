@@ -2,6 +2,7 @@
 
 module LD43 {
   export class Game extends Phaser.Game {
+    soundManager: Lib.SoundManager;
 
     constructor() {
       super({
@@ -13,13 +14,17 @@ module LD43 {
 
       this.state.add('boot', State.Boot, true);
       this.state.add('preloader', State.Preloader);
+      this.state.add('menu', State.Menu);
       this.state.add('game', State.Game);
+      this.state.add('scores', State.Scores);
     }
 
     boot() {
       super.boot();
       this.scale.pageAlignHorizontally = true;
       this.scale.pageAlignVertically = true;
+
+      this.soundManager = new Lib.SoundManager(this);
     }
   }
 }
