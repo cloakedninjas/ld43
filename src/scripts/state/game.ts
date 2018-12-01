@@ -163,29 +163,31 @@ module LD43.State {
           } else if (this.storageLocation.fridge.middle.contains(px, py)) {
             storageLocation = this.storageLocation.fridge.middle;
             storage = this.storage.fridge.middle;
-          } else {
+          } else if (this.storageLocation.fridge.bottom.contains(px, py)) {
             storageLocation = this.storageLocation.fridge.bottom;
             storage = this.storage.fridge.bottom;
           }
 
-          // get closest cell to pointer
+          if (storageLocation) {
+            // get closest cell to pointer
 
-          let x = Math.floor((px - storageLocation.x) / Entity.Food.UNIT_SIZE),
-            y = Math.floor((py - storageLocation.y) / Entity.Food.UNIT_SIZE),
-            cell;
+            let x = Math.floor((px - storageLocation.x) / Entity.Food.UNIT_SIZE),
+              y = Math.floor((py - storageLocation.y) / Entity.Food.UNIT_SIZE),
+              cell;
 
-          try {
-            cell = storage[x][y];
-          } catch (e) {
-          }
+            try {
+              cell = storage[x][y];
+            } catch (e) {
+            }
 
-          if (cell === 1) {
-            // only attempt marker placement if arrow above valid cell
             this.renderPlaceMarkerAt(storageLocation, storage, x, y);
           } else {
             this.hidePlaceMaker();
           }
+
           break;
+        default:
+          this.hidePlaceMaker();
       }
     }
 

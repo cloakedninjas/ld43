@@ -4,11 +4,6 @@ module LD43.Entity {
 
     game: Game;
 
-    size: {
-      w: number,
-      h: number,
-    };
-
     pickedUp: boolean = false;
     placeMaker: Phaser.Sprite[][];
 
@@ -16,11 +11,6 @@ module LD43.Entity {
       super(game, x, y, key, frame);
 
       this.anchor.set(0.5, 0.5);
-
-      /*this.size = {
-        w: this.width / Food.UNIT_SIZE,
-        h: this.height / Food.UNIT_SIZE
-      };*/
 
       // TODO: generate correct placeMaker
       this.placeMaker = [

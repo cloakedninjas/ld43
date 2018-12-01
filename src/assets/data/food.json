@@ -1,0 +1,17 @@
+[
+  {
+    "name": "Cupcake",
+    "asset": "cupcake",
+    "shape": [
+      [1]
+    ]
+  },
+  {
+    "name": "Sausage",
+    "asset": "sausage",
+    "shape": [
+      [1,0],
+      [1,1]
+    ]
+  }
+]

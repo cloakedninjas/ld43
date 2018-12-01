@@ -10,8 +10,14 @@ module LD43.State {
         'arrow'
       ];
 
+      const json = ['food'];
+
       img.forEach((file) => {
         this.load.image(file, 'assets/images/' + file + '.png');
+      });
+
+      json.forEach((file) => {
+        this.load.json(file, 'assets/data/' + file + '.json');
       });
     }
 
