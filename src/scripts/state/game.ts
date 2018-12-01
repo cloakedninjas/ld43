@@ -17,7 +17,7 @@ module LD43.State {
     };
     location: number;
 
-    storageLocation: {
+    storageBounds: {
       fridge: {
         top: Phaser.Rectangle,
         middle: Phaser.Rectangle,
@@ -37,7 +37,7 @@ module LD43.State {
     currentFood: Entity.Food;
     markerGroup: Phaser.Group;
     prevHover: {
-      storageLocation: Phaser.Rectangle,
+      storageBounds: Phaser.Rectangle,
       storage: number[][],
       x: number,
       y: number,
@@ -75,7 +75,7 @@ module LD43.State {
         size4 = (4 * Entity.Food.UNIT_SIZE),
         shelfX = 880;
 
-      this.storageLocation = {
+      this.storageBounds = {
         fridge: {
           top: new Phaser.Rectangle(shelfX, 163, size6, (2 * Entity.Food.UNIT_SIZE)),
           middle: new Phaser.Rectangle(shelfX, 406, size6, size4),
@@ -114,7 +114,7 @@ module LD43.State {
 
       this.prevHover = {
         storage: null,
-        storageLocation: null,
+        storageBounds: null,
         x: null,
         y: null,
       };
@@ -123,21 +123,8 @@ module LD43.State {
       this.add.existing(this.markerGroup);
 
       this.storedFood = [];
-
-      // TODO - change
-      let f = new Entity.Food(this.game, 10, 10, 'food_block');
-      this.add.existing(f);
-
-      f.pickUp();
-      this.currentFood = f;
-
-      f.placeMaker.forEach((row) => {
-        row.forEach((item) => {
-          if (item) {
-            this.markerGroup.add(item);
-          }
-        });
-      });
+      this.currentFood = null;
+      this.location = Game.LOCATION_BAG;
 
       this.input.addMoveCallback(this.onPointerMove, this);
       this.input.onDown.add(this.onPointerDown, this);
@@ -181,28 +168,28 @@ module LD43.State {
       const px = pointer.x + this.camera.x,
         py = pointer.y + this.camera.y;
 
-      let storageLocation: Phaser.Rectangle,
+      let storageBounds: Phaser.Rectangle,
         storage;
 
       switch (this.location) {
         case Game.LOCATION_FRIDGE:
 
-          if (this.storageLocation.fridge.top.contains(px, py)) {
-            storageLocation = this.storageLocation.fridge.top;
+          if (this.storageBounds.fridge.top.contains(px, py)) {
+            storageBounds = this.storageBounds.fridge.top;
             storage = this.storage.fridge.top;
-          } else if (this.storageLocation.fridge.middle.contains(px, py)) {
-            storageLocation = this.storageLocation.fridge.middle;
+          } else if (this.storageBounds.fridge.middle.contains(px, py)) {
+            storageBounds = this.storageBounds.fridge.middle;
             storage = this.storage.fridge.middle;
-          } else if (this.storageLocation.fridge.bottom.contains(px, py)) {
-            storageLocation = this.storageLocation.fridge.bottom;
+          } else if (this.storageBounds.fridge.bottom.contains(px, py)) {
+            storageBounds = this.storageBounds.fridge.bottom;
             storage = this.storage.fridge.bottom;
           }
 
-          if (storageLocation) {
+          if (storageBounds) {
             // get closest cell to pointer
 
-            let x = Math.floor((px - storageLocation.x) / Entity.Food.UNIT_SIZE),
-              y = Math.floor((py - storageLocation.y) / Entity.Food.UNIT_SIZE),
+            let x = Math.floor((px - storageBounds.x) / Entity.Food.UNIT_SIZE),
+              y = Math.floor((py - storageBounds.y) / Entity.Food.UNIT_SIZE),
               cell;
 
             try {
@@ -210,7 +197,7 @@ module LD43.State {
             } catch (e) {
             }
 
-            this.renderPlaceMarkerAt(storageLocation, storage, x, y);
+            this.renderPlaceMarkerAt(storageBounds, storage, x, y);
           } else {
             this.hidePlaceMaker();
           }
@@ -222,7 +209,10 @@ module LD43.State {
     }
 
     onPointerDown() {
-      if (this.location !== Game.LOCATION_FRIDGE) {
+      if (this.location === Game.LOCATION_BAG && this.currentFood === null) {
+        this.pickupNewFood();
+        return;
+      } else if (this.location !== Game.LOCATION_FRIDGE) {
         return;
       }
 
@@ -233,7 +223,7 @@ module LD43.State {
       }
     }
 
-    renderPlaceMarkerAt(storageLocation: Phaser.Rectangle, storage: number[][], x, y) {
+    renderPlaceMarkerAt(storageBounds: Phaser.Rectangle, storage: number[][], x, y) {
       if (this.prevHover.storage === storage &&
         this.prevHover.x === x &&
         this.prevHover.y === y) {
@@ -241,7 +231,7 @@ module LD43.State {
       }
 
       this.prevHover.storage = storage;
-      this.prevHover.storageLocation = storageLocation;
+      this.prevHover.storageBounds = storageBounds;
       this.prevHover.x = x;
       this.prevHover.y = y;
 
@@ -270,20 +260,39 @@ module LD43.State {
       });
 
       this.markerGroup.visible = true;
-      this.markerGroup.x = storageLocation.x + (x * Entity.Food.UNIT_SIZE);
-      this.markerGroup.y = storageLocation.y + (y * Entity.Food.UNIT_SIZE);
+      this.markerGroup.x = storageBounds.x + (x * Entity.Food.UNIT_SIZE);
+      this.markerGroup.y = storageBounds.y + (y * Entity.Food.UNIT_SIZE);
     }
 
     hidePlaceMaker() {
       this.markerGroup.visible = false;
     }
 
+    pickupNewFood() {
+      // TODO - randomize food
+      let f = new Entity.Food(this.game, 10, 10, 'food_block');
+      this.add.existing(f);
+
+      f.pickUp();
+      this.currentFood = f;
+
+      f.placeMaker.forEach((row) => {
+        row.forEach((item) => {
+          if (item) {
+            this.markerGroup.add(item);
+          }
+        });
+      });
+
+      this.hidePlaceMaker();
+    }
+
     placeFood() {
       this.storedFood.push(this.currentFood);
       this.currentFood.drop();
 
-      let x = this.prevHover.storageLocation.x,
-        y = this.prevHover.storageLocation.y;
+      let x = this.prevHover.storageBounds.x,
+        y = this.prevHover.storageBounds.y;
 
       x += Entity.Food.UNIT_SIZE * this.prevHover.x;
       y += Entity.Food.UNIT_SIZE * this.prevHover.y;
@@ -292,7 +301,19 @@ module LD43.State {
       y += this.currentFood.height / 2;
 
       this.currentFood.position.set(x, y);
+
+      // mark storage with new food
+
+      this.currentFood.placeMaker.forEach((row, i) => {
+        row.forEach((markerCell, j) => {
+          if (markerCell !== null) {
+            this.prevHover.storage[this.prevHover.x + i][this.prevHover.y + j] = 2;
+          }
+        });
+      });
+
       this.currentFood = null;
+      this.markerGroup.removeAll();
     }
   }
 }
