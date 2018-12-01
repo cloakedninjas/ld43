@@ -3,14 +3,17 @@ module LD43.State {
 
     static LOCATION_BAG: number = 0;
     static LOCATION_FRIDGE: number = 1;
-    static LOCATION_RIGHT: number = 2;
-    static LOCATION_BOTTOM: number = 3;
+    static LOCATION_TABLE: number = 2;
+    static LOCATION_BIN: number = 3;
 
     bg: Phaser.Sprite;
     buttons: {
       bagR: Phaser.Button,
       fridgeL: Phaser.Button,
-      fridgeR: Phaser.Button
+      fridgeR: Phaser.Button,
+      fridgeD: Phaser.Button,
+      tableL: Phaser.Button,
+      binU: Phaser.Button,
     };
     location: number;
 
@@ -50,7 +53,10 @@ module LD43.State {
       this.buttons = {
         bagR: new Phaser.Button(this.game, 763, 725, 'arrow', this.panTo.bind(this, Game.LOCATION_FRIDGE)),
         fridgeL: new Phaser.Button(this.game, 836, 725, 'arrow', this.panTo.bind(this, Game.LOCATION_BAG)),
-        fridgeR: new Phaser.Button(this.game, 1563, 725, 'arrow', this.panTo.bind(this, Game.LOCATION_BAG))
+        fridgeR: new Phaser.Button(this.game, 1563, 725, 'arrow', this.panTo.bind(this, Game.LOCATION_TABLE)),
+        fridgeD: new Phaser.Button(this.game, 1200, 1320, 'arrow', this.panTo.bind(this, Game.LOCATION_BIN)),
+        tableL: new Phaser.Button(this.game, 1640, 725, 'arrow', this.panTo.bind(this, Game.LOCATION_FRIDGE)),
+        binU: new Phaser.Button(this.game, 1200, 1390, 'arrow', this.panTo.bind(this, Game.LOCATION_FRIDGE)),
       };
 
       for (const button in this.buttons) {
@@ -61,6 +67,9 @@ module LD43.State {
       }
 
       this.buttons.fridgeL.scale.x = -1;
+      this.buttons.fridgeD.angle = 90;
+      this.buttons.tableL.scale.x = -1;
+      this.buttons.binU.angle = 270;
 
       const size6 = (6 * Entity.Food.UNIT_SIZE),
         size4 = (4 * Entity.Food.UNIT_SIZE),
@@ -145,7 +154,15 @@ module LD43.State {
           break;
 
         case Game.LOCATION_FRIDGE:
-          dest = {x: 800};
+          dest = {x: 800, y: 0};
+          break;
+
+        case Game.LOCATION_TABLE:
+          dest = {x: 1600};
+          break;
+
+        case Game.LOCATION_BIN:
+          dest = {y: 1360};
           break;
       }
 
