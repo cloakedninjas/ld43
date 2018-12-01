@@ -10,21 +10,28 @@ module LD43.Entity {
     };
 
     pickedUp: boolean = false;
-    placeMaker: any;
+    placeMaker: Phaser.Sprite[][];
 
     constructor(game, x?, y?, key?, frame?) {
       super(game, x, y, key, frame);
 
       this.anchor.set(0.5, 0.5);
 
-      this.size = {
+      /*this.size = {
         w: this.width / Food.UNIT_SIZE,
         h: this.height / Food.UNIT_SIZE
-      };
+      };*/
 
-      // generate correct placeMaker
+      // TODO: generate correct placeMaker
       this.placeMaker = [
-        [new Phaser.Sprite(game, 0, 0, 'green_block')]
+        [
+          new Phaser.Sprite(game, 0, 0, 'green_block'),
+          new Phaser.Sprite(game, 0, Food.UNIT_SIZE, 'green_block')
+        ],
+        [
+          null,
+          new Phaser.Sprite(game, Food.UNIT_SIZE, Food.UNIT_SIZE, 'green_block')
+        ]
       ];
     }
 
