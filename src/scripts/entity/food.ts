@@ -38,6 +38,8 @@ module LD43.Entity {
       this.spoilState = Food.SPOIL_GOOD;
       this.spoilTimer = game.time.create();
       this.spoilTimer.add(Phaser.Timer.SECOND * config.spoil_time_1, this.spoil, this, Food.SPOIL_OK);
+      this.spoilTimer.add(Phaser.Timer.SECOND * config.spoil_time_2, this.spoil, this, Food.SPOIL_BAD);
+      this.spoilTimer.start();
 
       this.placeMaker = [];
 
@@ -81,10 +83,8 @@ module LD43.Entity {
       this.location.y = location.y;
 
       if (inFridge) {
-        console.log('pausing');
         this.spoilTimer.pause();
-      } else if (this.spoilTimer.paused) {
-        console.log('resuming');
+      } else {
         this.spoilTimer.resume();
       }
     }
@@ -92,10 +92,8 @@ module LD43.Entity {
     spoil(state: number) {
       this.spoilState = state;
 
-      const config = this.game.cache.getJSON('config');
-
-      if (this.spoilState === Food.SPOIL_OK) {
-        this.spoilTimer.add(Phaser.Timer.SECOND * config.spoil_time_2, this.spoil, this, Food.SPOIL_BAD);
+      if (this.spoilState === Food.SPOIL_BAD) {
+        this.spoilTimer.destroy();
       }
 
       console.log(this.data.name, this.spoilState);
