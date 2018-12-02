@@ -363,12 +363,17 @@ module LD43.State {
     }
 
     placeFood() {
+      const placedInFridge = this.prevHover.storage === this.storage.fridge.top ||
+        this.prevHover.storage === this.storage.fridge.middle ||
+        this.prevHover.storage === this.storage.fridge.bottom
+
       this.storedFood.push(this.currentFood);
+
       this.currentFood.drop({
         storage: this.prevHover.storage,
         x: this.prevHover.x,
         y: this.prevHover.y
-      });
+      }, placedInFridge);
 
       let x = this.prevHover.storageBounds.x,
         y = this.prevHover.storageBounds.y;

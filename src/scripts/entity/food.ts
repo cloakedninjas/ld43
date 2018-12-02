@@ -18,6 +18,7 @@ module LD43.Entity {
     };
     cellCount: number;
     spoilState: number;
+    spoilTimer: Phaser.Timer;
     data: {
       name: string,
       asset: string,
@@ -29,16 +30,18 @@ module LD43.Entity {
       this.anchor.set(0.5, 0.5);
 
       const foodData = game.cache.getJSON('food');
+      const config = game.cache.getJSON('config');
+
       this.data = foodData[id];
 
       this.loadTexture('food-' + this.data.asset + '-1');
       this.cellCount = 0;
       this.spoilState = Food.SPOIL_GOOD;
 
-      const config = game.cache.getJSON('config');
+      //this.spoilTimer = game.time.events.add(Phaser.Timer.SECOND * config.spoil_time_1, this.spoil, this, Food.SPOIL_OK);
 
-      game.time.events.add(Phaser.Timer.SECOND * config.spoil_time_1, this.spoil, this, Food.SPOIL_OK);
-      game.time.events.add(Phaser.Timer.SECOND * config.spoil_time_2, this.spoil, this, Food.SPOIL_BAD);
+      this.spoilTimer = game.time.create();
+      this.spoilTimer.add(Phaser.Timer.SECOND * config.spoil_time_1, this.spoil, this, Food.SPOIL_OK);
 
       this.placeMaker = [];
 
@@ -72,7 +75,7 @@ module LD43.Entity {
       this.inputEnabled = false;
     }
 
-    drop(location) {
+    drop(location, inFridge: boolean) {
       this.pickedUp = false;
       this.scale.set(1);
       this.inputEnabled = true;
@@ -80,11 +83,26 @@ module LD43.Entity {
       this.location.storage = location.storage;
       this.location.x = location.x;
       this.location.y = location.y;
+
+      if (inFridge) {
+        console.log('pausing');
+        this.spoilTimer.pause();
+      } else if (this.spoilTimer.paused) {
+        console.log('resuming');
+        this.spoilTimer.resume();
+      }
     }
 
     spoil(state: number) {
       this.spoilState = state;
-      console.log(this.spoilState);
+
+      const config = this.game.cache.getJSON('config');
+
+      if (this.spoilState === Food.SPOIL_OK) {
+        this.spoilTimer.add(Phaser.Timer.SECOND * config.spoil_time_2, this.spoil, this, Food.SPOIL_BAD);
+      }
+
+      console.log(this.data.name, this.spoilState);
     }
 
     update() {
@@ -95,6 +113,5 @@ module LD43.Entity {
         this.y = game.input.activePointer.y + game.camera.y;
       }
     }
-
   }
 }
