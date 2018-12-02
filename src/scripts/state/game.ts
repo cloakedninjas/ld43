@@ -1,9 +1,9 @@
 module LD43.State {
   export class Game extends Phaser.State {
 
-    static LOCATION_BAG: number = 0;
+    static LOCATION_TABLE: number = 0;
     static LOCATION_FRIDGE: number = 1;
-    static LOCATION_TABLE: number = 2;
+    static LOCATION_BIN: number = 2;
 
     static CELL_AVAILABLE: number = 1;
     static CELL_OCCUPIED: number = 2;
@@ -67,8 +67,8 @@ module LD43.State {
 
       this.buttons = {
         bagR: new Phaser.Button(game, 763, 725, buttonSprite, this.panTo.bind(this, Game.LOCATION_FRIDGE), null, null, null, 1),
-        fridgeL: new Phaser.Button(game, 836, 725, buttonSprite, this.panTo.bind(this, Game.LOCATION_BAG), null, null, null, 1),
-        fridgeR: new Phaser.Button(game, 1563, 725, buttonSprite, this.panTo.bind(this, Game.LOCATION_TABLE), null, null, null, 1),
+        fridgeL: new Phaser.Button(game, 836, 725, buttonSprite, this.panTo.bind(this, Game.LOCATION_TABLE), null, null, null, 1),
+        fridgeR: new Phaser.Button(game, 1563, 725, buttonSprite, this.panTo.bind(this, Game.LOCATION_BIN), null, null, null, 1),
         binL: new Phaser.Button(game, 1640, 725, buttonSprite, this.panTo.bind(this, Game.LOCATION_FRIDGE), null, null, null, 1)
       };
 
@@ -95,6 +95,7 @@ module LD43.State {
 
       const size6 = (6 * Entity.Food.UNIT_SIZE),
         size4 = (4 * Entity.Food.UNIT_SIZE),
+        size3 = (3 * Entity.Food.UNIT_SIZE),
         shelfX = 880;
 
       this.storage = {
@@ -124,7 +125,7 @@ module LD43.State {
             [1, 1, 1, 1]
           ])
         },
-        table: new Entity.Storage(new Phaser.Rectangle(shelfX, 163, (3 * Entity.Food.UNIT_SIZE), Entity.Food.UNIT_SIZE), [
+        table: new Entity.Storage(new Phaser.Rectangle(54, 1186, size3, Entity.Food.UNIT_SIZE), [
           [1],
           [1],
           [1],
@@ -144,7 +145,7 @@ module LD43.State {
 
       this.storedFood = [];
       this.currentFood = null;
-      this.location = Game.LOCATION_BAG;
+      this.location = Game.LOCATION_TABLE;
       this.binnedScore = {
         qty: 0,
         score: 0
@@ -195,7 +196,7 @@ module LD43.State {
       let dest;
 
       switch (location) {
-        case Game.LOCATION_BAG:
+        case Game.LOCATION_TABLE:
           dest = {x: 0};
           break;
 
@@ -203,7 +204,7 @@ module LD43.State {
           dest = {x: 800, y: 0};
           break;
 
-        case Game.LOCATION_TABLE:
+        case Game.LOCATION_BIN:
           dest = {x: 1600};
           break;
       }
@@ -223,11 +224,17 @@ module LD43.State {
       const px = pointer.x + this.camera.x,
         py = pointer.y + this.camera.y;
 
-      let storage: Entity.Storage;
+      let storage: Entity.Storage,
+        x,
+        y;
 
       switch (this.location) {
+        case Game.LOCATION_TABLE:
+          if (this.storage.table.bounds.contains(px, py)) {
+            storage = this.storage.table;
+          }
+          break;
         case Game.LOCATION_FRIDGE:
-
           if (this.storage.fridge.top.bounds.contains(px, py)) {
             storage = this.storage.fridge.top;
           } else if (this.storage.fridge.middle.bounds.contains(px, py)) {
@@ -236,34 +243,30 @@ module LD43.State {
             storage = this.storage.fridge.bottom;
           }
 
-          if (storage) {
-            // get closest cell to pointer
-
-            let x = Math.floor((px - storage.bounds.x) / Entity.Food.UNIT_SIZE),
-              y = Math.floor((py - storage.bounds.y) / Entity.Food.UNIT_SIZE),
-              cell;
-
-            try {
-              cell = storage.tileMap[x][y];
-            } catch (e) {
-            }
-
-            this.renderPlaceMarkerAt(storage, x, y);
-          } else {
-            this.hidePlaceMaker();
-          }
-
           break;
         default:
           this.hidePlaceMaker();
       }
+
+      if (storage) {
+        // get closest cell to pointer
+
+        x = Math.floor((px - storage.bounds.x) / Entity.Food.UNIT_SIZE);
+        y = Math.floor((py - storage.bounds.y) / Entity.Food.UNIT_SIZE);
+
+        this.renderPlaceMarkerAt(storage, x, y);
+      } else {
+        this.hidePlaceMaker();
+      }
+
+
     }
 
     onInputDown(pointer: Phaser.Pointer) {
-      if (this.location === Game.LOCATION_BAG && this.currentFood === null && this.bagArea.contains(pointer.x, pointer.y)) {
+      if (this.location === Game.LOCATION_TABLE && this.currentFood === null && this.bagArea.contains(pointer.x, pointer.y)) {
         this.pickupNewFood();
       } else if (this.currentFood !== null) {
-        if (this.location === Game.LOCATION_TABLE && this.binArea.contains(pointer.x, pointer.y)) {
+        if (this.location === Game.LOCATION_BIN && this.binArea.contains(pointer.x, pointer.y)) {
           this.binFood(this.currentFood);
         }
         else if (this.foodPlaceable) {
