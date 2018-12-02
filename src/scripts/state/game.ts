@@ -99,6 +99,8 @@ module LD43.State {
       this.buttons.fridgeD.angle = 180;
       this.buttons.tableL.angle = 270;
 
+      this.add.button(994, 16, 'close-button', this.endGame, this, null, null, 1);
+
       const size6 = (6 * Entity.Food.UNIT_SIZE),
         size4 = (4 * Entity.Food.UNIT_SIZE),
         shelfX = 880;
@@ -159,6 +161,7 @@ module LD43.State {
 
       //game.soundManager.playMusic('snackrifice');
 
+      // TODO - remove
       window['g'] = this;
 
       // init complete begin transition

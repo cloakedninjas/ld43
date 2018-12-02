@@ -37,6 +37,7 @@ module LD43.State {
 
       // spritesheets
       this.load.spritesheet('arrows', 'assets/images/arrows.png', 89, 55);
+      this.load.spritesheet('close-button', 'assets/images/close_button.png', 411, 106);
 
       this.load.script('webfont', 'https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js');
     }
