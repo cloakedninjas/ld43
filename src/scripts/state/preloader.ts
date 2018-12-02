@@ -3,7 +3,7 @@ module LD43.State {
     loadingBar: Entity.PreloadBar;
 
     preload() {
-      const logo = this.add.sprite(this.game.width / 2, 200, 'phaser');
+      const logo = this.add.sprite(this.game.width / 2, 200, 'logo');
       logo.anchor.x = 0.5;
 
       this.loadingBar = new Entity.PreloadBar(this.game);
@@ -44,12 +44,17 @@ module LD43.State {
       tween.onComplete.add(this.startGame, this);
     }
 
-    startGame() {
-      this.game.state.start('game', true);
+    shutdown() {
+      this.loadingBar.loaderImg.destroy();
     }
 
     loadUpdate() {
       this.loadingBar.setFillPercent(this.load.progress);
+    }
+
+    startGame() {
+      this.game.state.start('title', false);
+      //this.game.state.start('game', true);
     }
   }
 }

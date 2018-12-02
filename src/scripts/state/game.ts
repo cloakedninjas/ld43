@@ -9,7 +9,7 @@ module LD43.State {
     static CELL_AVAILABLE: number = 1;
     static CELL_OCCUPIED: number = 2;
 
-    game:LD43.Game;
+    game: LD43.Game;
     bg: Phaser.Sprite;
     buttons: {
       bagR: Phaser.Button,
@@ -50,19 +50,25 @@ module LD43.State {
     storedFood: Entity.Food[];
 
     create() {
+      // collect elements from previous state
+      const game = this.game;
+
+      const logo: any = game.world.children[0];
+
       this.bg = this.add.sprite(0, 0, 'bg');
-      this.game.camera.bounds.width = this.bg.width;
-      this.game.camera.bounds.height = this.bg.height;
+      this.bg.alpha = 0;
+      game.camera.bounds.width = this.bg.width;
+      game.camera.bounds.height = this.bg.height;
 
       let buttonSprite = 'arrows';
 
       this.buttons = {
-        bagR: new Phaser.Button(this.game, 763, 725, buttonSprite, this.panTo.bind(this, Game.LOCATION_FRIDGE), null, null, null, 1),
-        fridgeL: new Phaser.Button(this.game, 836, 725, buttonSprite, this.panTo.bind(this, Game.LOCATION_BAG), null, null, null, 1),
-        fridgeR: new Phaser.Button(this.game, 1563, 725, buttonSprite, this.panTo.bind(this, Game.LOCATION_TABLE), null, null, null, 1),
-        fridgeD: new Phaser.Button(this.game, 1200, 1320, buttonSprite, this.panTo.bind(this, Game.LOCATION_BIN), null, null, null, 1),
-        tableL: new Phaser.Button(this.game, 1640, 725, buttonSprite, this.panTo.bind(this, Game.LOCATION_FRIDGE), null, null, null, 1),
-        binU: new Phaser.Button(this.game, 1200, 1390, buttonSprite, this.panTo.bind(this, Game.LOCATION_FRIDGE), null, null, null, 1)
+        bagR: new Phaser.Button(game, 763, 725, buttonSprite, this.panTo.bind(this, Game.LOCATION_FRIDGE), null, null, null, 1),
+        fridgeL: new Phaser.Button(game, 836, 725, buttonSprite, this.panTo.bind(this, Game.LOCATION_BAG), null, null, null, 1),
+        fridgeR: new Phaser.Button(game, 1563, 725, buttonSprite, this.panTo.bind(this, Game.LOCATION_TABLE), null, null, null, 1),
+        fridgeD: new Phaser.Button(game, 1200, 1320, buttonSprite, this.panTo.bind(this, Game.LOCATION_BIN), null, null, null, 1),
+        tableL: new Phaser.Button(game, 1640, 725, buttonSprite, this.panTo.bind(this, Game.LOCATION_FRIDGE), null, null, null, 1),
+        binU: new Phaser.Button(game, 1200, 1390, buttonSprite, this.panTo.bind(this, Game.LOCATION_FRIDGE), null, null, null, 1)
       };
 
       for (const button in this.buttons) {
@@ -72,6 +78,7 @@ module LD43.State {
         this.add.existing(b);
       }
 
+      this.buttons.bagR.alpha = 0;
       this.buttons.bagR.angle = 90;
       this.buttons.fridgeL.angle = 270;
       this.buttons.fridgeR.angle = 90;
@@ -126,7 +133,7 @@ module LD43.State {
         y: null,
       };
 
-      this.markerGroup = new Phaser.Group(this.game);
+      this.markerGroup = new Phaser.Group(game);
       this.add.existing(this.markerGroup);
 
       this.storedFood = [];
@@ -136,9 +143,29 @@ module LD43.State {
       this.input.addMoveCallback(this.onPointerMove, this);
       this.input.onDown.add(this.onInputDown, this);
 
-      //this.game.soundManager.playMusic('snackrifice');
+      //game.soundManager.playMusic('snackrifice');
 
       window['g'] = this;
+
+      // init complete begin transition
+
+      const delay = 500,
+        duration = 1200;
+
+      logo.bringToTop();
+
+      this.game.add.tween(logo).to({
+        y: (-logo.height)
+      }, duration, Phaser.Easing.Sinusoidal.Out, true, delay);
+
+      this.game.add.tween(this.bg).to({
+        alpha: 1
+      }, duration, Phaser.Easing.Sinusoidal.Out, true, delay);
+
+      this.game.add.tween(this.buttons.bagR).to({
+        alpha: 1
+      }, duration, Phaser.Easing.Sinusoidal.Out, true, delay);
+
     }
 
     panTo(location: number) {

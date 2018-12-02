@@ -14,7 +14,7 @@ module LD43 {
 
       this.state.add('boot', State.Boot, true);
       this.state.add('preloader', State.Preloader);
-      this.state.add('menu', State.Menu);
+      this.state.add('title', State.Title);
       this.state.add('game', State.Game);
       this.state.add('scores', State.Scores);
     }
