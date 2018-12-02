@@ -10,7 +10,11 @@ module LD43.State {
     static CELL_OCCUPIED: number = 2;
 
     game: LD43.Game;
+    titleElems: any;
+
     bg: Phaser.Sprite;
+    bagArea: Phaser.Rectangle;
+
     buttons: {
       bagR: Phaser.Button,
       fridgeL: Phaser.Button,
@@ -49,16 +53,19 @@ module LD43.State {
 
     storedFood: Entity.Food[];
 
-    create() {
-      // collect elements from previous state
-      const game = this.game;
+    init(opts) {
+      this.titleElems = opts;
+    }
 
-      const logo: any = game.world.children[0];
+    create() {
+      const game = this.game;
 
       this.bg = this.add.sprite(0, 0, 'bg');
       this.bg.alpha = 0;
       game.camera.bounds.width = this.bg.width;
       game.camera.bounds.height = this.bg.height;
+
+      this.bagArea = new Phaser.Rectangle(160, 561, 478, 572);
 
       let buttonSprite = 'arrows';
 
@@ -149,14 +156,22 @@ module LD43.State {
 
       // init complete begin transition
 
-      const delay = 500,
-        duration = 1200;
+      const delay = 0,
+        duration = 1000;
 
-      logo.bringToTop();
+      this.titleElems.logo.bringToTop();
 
-      this.game.add.tween(logo).to({
-        y: (-logo.height)
+      this.game.add.tween(this.titleElems.logo).to({
+        y: (-this.titleElems.logo.height)
       }, duration, Phaser.Easing.Sinusoidal.Out, true, delay);
+
+      let tween = this.game.add.tween(this.titleElems.bg).to({
+        alpha: 0
+      }, duration, Phaser.Easing.Sinusoidal.Out, true, delay);
+
+      tween.onComplete.add(this.cleanupIntro, this);
+
+      //
 
       this.game.add.tween(this.bg).to({
         alpha: 1
@@ -165,7 +180,11 @@ module LD43.State {
       this.game.add.tween(this.buttons.bagR).to({
         alpha: 1
       }, duration, Phaser.Easing.Sinusoidal.Out, true, delay);
+    }
 
+    cleanupIntro() {
+      this.titleElems.bg.destroy();
+      this.titleElems.logo.destroy();
     }
 
     panTo(location: number) {
@@ -244,8 +263,12 @@ module LD43.State {
       }
     }
 
-    onInputDown() {
-      if (this.location === Game.LOCATION_BAG && this.currentFood === null) {
+    onInputDown(pointer: Phaser.Pointer) {
+      if (
+        this.location === Game.LOCATION_BAG &&
+        this.currentFood === null &&
+        this.bagArea.contains(pointer.x, pointer.y)
+      ) {
         this.pickupNewFood();
         return;
       } else if (this.location !== Game.LOCATION_FRIDGE) {

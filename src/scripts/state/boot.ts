@@ -1,7 +1,7 @@
 module LD43.State {
   export class Boot extends Phaser.State {
     preload() {
-      this.load.image('logo', 'assets/images/phaser.png');
+      this.load.image('title', 'assets/images/title.png');
     }
 
     create() {

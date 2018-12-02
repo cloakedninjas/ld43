@@ -3,13 +3,13 @@ module LD43.State {
     loadingBar: Entity.PreloadBar;
 
     preload() {
-      const logo = this.add.sprite(this.game.width / 2, 200, 'logo');
+      const logo = this.add.sprite(this.game.width / 2, 30, 'title');
       logo.anchor.x = 0.5;
 
       this.loadingBar = new Entity.PreloadBar(this.game);
 
       const img = [
-        'bg', 'food_block', 'green_block', 'red_block'
+        'background_bag', 'bg', 'food_block', 'green_block', 'red_block', 'white_arrow'
       ];
       const food = ['cake', 'chickenleg', 'cupcake', 'milk'];
 
