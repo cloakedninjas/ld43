@@ -9,15 +9,21 @@ module LD43.State {
       this.loadingBar = new Entity.PreloadBar(this.game);
 
       const img = [
-        'bg', 'food_block', 'green_block', 'red_block', 'arrow',
-        '1x1_cupcake'
+        'bg', 'food_block', 'green_block', 'red_block', 'arrow'
       ];
+      const food = ['cake', 'chickenleg', 'cupcake', 'milk'];
 
-      const json = ['food'];
+      const json = ['food', 'config'];
       const music = ['title'];
 
       img.forEach((file) => {
         this.load.image(file, 'assets/images/' + file + '.png');
+      });
+
+      food.forEach((file) => {
+        for (let i = 1; i <= 1; i++) {
+          this.load.image('food-' + file + '-' + i, 'assets/images/food/' + file + '_' + i + '.png');
+        }
       });
 
       music.forEach((file) => {

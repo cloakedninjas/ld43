@@ -3,6 +3,10 @@ module LD43.Entity {
     static UNIT_SIZE: number = 106;
     static POINT_PER_CELL: number = 2;
 
+    static SPOIL_GOOD: number = 1;
+    static SPOIL_OK: number = 2;
+    static SPOIL_BAD: number = 3;
+
     game: Game;
 
     pickedUp: boolean = false;
@@ -13,19 +17,33 @@ module LD43.Entity {
       y: number
     };
     cellCount: number;
+    spoilState: number;
+    spoilTimer: Phaser.TimerEvent;
+    data: {
+      name: string,
+      asset: string,
+      shape: number[][]
+    };
 
     constructor(game: Phaser.Game, id: number) {
       super(game, 0, 0);
       this.anchor.set(0.5, 0.5);
 
       const foodData = game.cache.getJSON('food');
-      const item = foodData[id];
+      this.data = foodData[id];
 
-      this.loadTexture(item.asset);
+      this.loadTexture('food-' + this.data.asset + '-1');
       this.cellCount = 0;
+      this.spoilState = Food.SPOIL_GOOD;
+
+      const config = game.cache.getJSON('config');
+
+      game.time.events.add(Phaser.Timer.SECOND * config.spoil_time_1, this.spoil, this, Food.SPOIL_OK);
+      game.time.events.add(Phaser.Timer.SECOND * config.spoil_time_2, this.spoil, this, Food.SPOIL_BAD);
+
       this.placeMaker = [];
 
-      item.shape.forEach((row, i) => {
+      this.data.shape.forEach((row, i) => {
         this.placeMaker.push([]);
 
         row.forEach((cell, j) => {
@@ -63,6 +81,11 @@ module LD43.Entity {
       this.location.storage = location.storage;
       this.location.x = location.x;
       this.location.y = location.y;
+    }
+
+    spoil(state: number) {
+      this.spoilState = state;
+      console.log(this.spoilState);
     }
 
     update() {
