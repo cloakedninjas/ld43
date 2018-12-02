@@ -24,6 +24,7 @@ module LD43.State {
       binU: Phaser.Button,
     };
     location: number;
+    panTween: Phaser.Tween;
 
     storageBounds: {
       fridge: {
@@ -79,7 +80,13 @@ module LD43.State {
       };
 
       for (const button in this.buttons) {
-        let b = this.buttons[button];
+        let b: Phaser.Button = this.buttons[button];
+        b.events.onInputOver.add(() => {
+          if (this.currentFood !== null && (this.panTween == null || !this.panTween.isRunning)) {
+            b.onInputUp.dispatch();
+          }
+
+        }, this);
 
         b.anchor.set(0.5);
         this.add.existing(b);
@@ -208,9 +215,9 @@ module LD43.State {
           break;
       }
 
-      let tween = this.game.add.tween(this.game.camera).to(dest, 500, Phaser.Easing.Sinusoidal.Out, true);
+      this.panTween = this.game.add.tween(this.game.camera).to(dest, 500, Phaser.Easing.Sinusoidal.Out, true);
 
-      tween.onComplete.add(() => {
+      this.panTween.onComplete.add(() => {
         this.location = location;
       }, this);
     }

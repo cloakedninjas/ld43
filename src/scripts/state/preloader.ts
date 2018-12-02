@@ -62,8 +62,8 @@ module LD43.State {
     }
 
     startGame() {
-      //this.game.state.start('title', false);
-      this.game.state.start('scores', true);
+      this.game.state.start('title', false);
+      //this.game.state.start('scores', true);
       //this.game.state.start('game', true);
     }
   }
