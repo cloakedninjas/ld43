@@ -6,6 +6,9 @@ module LD43.State {
     static LOCATION_TABLE: number = 2;
     static LOCATION_BIN: number = 3;
 
+    static CELL_AVAILABLE: number = 1;
+    static CELL_OCCUPIED: number = 2;
+
     bg: Phaser.Sprite;
     buttons: {
       bagR: Phaser.Button,
@@ -127,7 +130,7 @@ module LD43.State {
       this.location = Game.LOCATION_BAG;
 
       this.input.addMoveCallback(this.onPointerMove, this);
-      this.input.onDown.add(this.onPointerDown, this);
+      this.input.onDown.add(this.onInputDown, this);
 
       window['g'] = this;
     }
@@ -208,7 +211,7 @@ module LD43.State {
       }
     }
 
-    onPointerDown() {
+    onInputDown() {
       if (this.location === Game.LOCATION_BAG && this.currentFood === null) {
         this.pickupNewFood();
         return;
@@ -271,12 +274,17 @@ module LD43.State {
     pickupNewFood() {
       // TODO - randomize food
       let f = new Entity.Food(this.game, 10, 10, 'food_block');
+      f.events.onInputDown.add(this.pickUpFood.bind(this, f, false));
       this.add.existing(f);
 
-      f.pickUp();
-      this.currentFood = f;
+      this.hidePlaceMaker();
+      this.pickUpFood(f, true);
+    }
 
-      f.placeMaker.forEach((row) => {
+    pickUpFood(food: Entity.Food, firstTime: boolean) {
+      this.currentFood = food;
+      food.pickUp();
+      food.placeMaker.forEach((row) => {
         row.forEach((item) => {
           if (item) {
             this.markerGroup.add(item);
@@ -284,12 +292,18 @@ module LD43.State {
         });
       });
 
-      this.hidePlaceMaker();
+      if (!firstTime) {
+        this.applyMarkerToStorage(food, food.location.storage, food.location.x, food.location.y, false);
+      }
     }
 
     placeFood() {
       this.storedFood.push(this.currentFood);
-      this.currentFood.drop();
+      this.currentFood.drop({
+        storage: this.prevHover.storage,
+        x: this.prevHover.x,
+        y: this.prevHover.y
+      });
 
       let x = this.prevHover.storageBounds.x,
         y = this.prevHover.storageBounds.y;
@@ -302,18 +316,20 @@ module LD43.State {
 
       this.currentFood.position.set(x, y);
 
-      // mark storage with new food
-
-      this.currentFood.placeMaker.forEach((row, i) => {
-        row.forEach((markerCell, j) => {
-          if (markerCell !== null) {
-            this.prevHover.storage[this.prevHover.x + i][this.prevHover.y + j] = 2;
-          }
-        });
-      });
+      this.applyMarkerToStorage(this.currentFood, this.prevHover.storage, this.prevHover.x, this.prevHover.y, true);
 
       this.currentFood = null;
       this.markerGroup.removeAll();
+    }
+
+    applyMarkerToStorage(food: Entity.Food, storage: number[][], x: number, y: number, placing: boolean) {
+      food.placeMaker.forEach((row, i) => {
+        row.forEach((markerCell, j) => {
+          if (markerCell !== null) {
+            storage[x + i][y + j] = placing ? Game.CELL_OCCUPIED : Game.CELL_AVAILABLE;
+          }
+        });
+      });
     }
   }
 }

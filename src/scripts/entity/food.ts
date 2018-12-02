@@ -6,6 +6,11 @@ module LD43.Entity {
 
     pickedUp: boolean = false;
     placeMaker: Phaser.Sprite[][];
+    location: {
+      storage: number[][],
+      x: number,
+      y: number
+    };
 
     constructor(game, x?, y?, key?, frame?) {
       super(game, x, y, key, frame);
@@ -23,16 +28,28 @@ module LD43.Entity {
           new Phaser.Sprite(game, Food.UNIT_SIZE, Food.UNIT_SIZE, 'green_block')
         ]
       ];
+
+      this.location = {
+        storage: null,
+        x: null,
+        y: null
+      }
     }
 
     pickUp() {
       this.pickedUp = true;
       this.scale.set(0.6);
+      this.inputEnabled = false;
     }
 
-    drop() {
+    drop(location) {
       this.pickedUp = false;
       this.scale.set(1);
+      this.inputEnabled = true;
+
+      this.location.storage = location.storage;
+      this.location.x = location.x;
+      this.location.y = location.y;
     }
 
     update() {
