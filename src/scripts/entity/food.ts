@@ -49,7 +49,7 @@ module LD43.Entity {
           let val;
 
           if (cell === 1) {
-            val = new Phaser.Sprite(game, i * Food.UNIT_SIZE, j * Food.UNIT_SIZE, 'green_block');
+            val = new Phaser.Sprite(game, i * Food.UNIT_SIZE, j * Food.UNIT_SIZE, 'box_green');
             this.cellCount++;
           } else {
             val = null;

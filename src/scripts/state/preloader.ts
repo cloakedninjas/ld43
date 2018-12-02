@@ -9,7 +9,8 @@ module LD43.State {
       this.loadingBar = new Entity.PreloadBar(this.game);
 
       const img = [
-        'background_bag', 'bg', 'food_block', 'green_block', 'red_block', 'white_arrow'
+        'background_bag', 'background_full_2', 'food_block', 'box_green', 'box_red', 'white_arrow',
+        'end_screen'
       ];
       const food = ['cake', 'chickenleg', 'cupcake', 'milk'];
 
@@ -36,12 +37,20 @@ module LD43.State {
 
       // spritesheets
       this.load.spritesheet('arrows', 'assets/images/arrows.png', 89, 55);
+
+      this.load.script('webfont', 'https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js');
     }
 
     create() {
       this.loadingBar.setFillPercent(100);
       let tween = this.game.add.tween(this.loadingBar).to({alpha: 0}, 1000, Phaser.Easing.Linear.None, true);
       tween.onComplete.add(this.startGame, this);
+
+      WebFont.load({
+        google: {
+          families: ['Press Start 2P']
+        }
+      });
     }
 
     shutdown() {
@@ -53,7 +62,8 @@ module LD43.State {
     }
 
     startGame() {
-      this.game.state.start('title', false);
+      //this.game.state.start('title', false);
+      this.game.state.start('scores', true);
       //this.game.state.start('game', true);
     }
   }

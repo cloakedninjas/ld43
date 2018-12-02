@@ -60,7 +60,7 @@ module LD43.State {
     create() {
       const game = this.game;
 
-      this.bg = this.add.sprite(0, 0, 'bg');
+      this.bg = this.add.sprite(0, 0, 'background_full_2');
       this.bg.alpha = 0;
       game.camera.bounds.width = this.bg.width;
       game.camera.bounds.height = this.bg.height;
@@ -309,9 +309,9 @@ module LD43.State {
             }
 
             if (storageCell === 1) {
-              markerCell.loadTexture('green_block');
+              markerCell.loadTexture('box_green');
             } else {
-              markerCell.loadTexture('red_block');
+              markerCell.loadTexture('box_red');
               this.foodPlaceable = false;
             }
           }
@@ -388,6 +388,10 @@ module LD43.State {
           }
         });
       });
+    }
+
+    endGame() {
+      this.game.state.start('scores');
     }
   }
 }
