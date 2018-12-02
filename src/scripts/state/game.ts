@@ -4,7 +4,6 @@ module LD43.State {
     static LOCATION_BAG: number = 0;
     static LOCATION_FRIDGE: number = 1;
     static LOCATION_TABLE: number = 2;
-    static LOCATION_BIN: number = 3;
 
     static CELL_AVAILABLE: number = 1;
     static CELL_OCCUPIED: number = 2;
@@ -19,9 +18,7 @@ module LD43.State {
       bagR: Phaser.Button,
       fridgeL: Phaser.Button,
       fridgeR: Phaser.Button,
-      fridgeD: Phaser.Button,
-      tableL: Phaser.Button,
-      binU: Phaser.Button,
+      binL: Phaser.Button
     };
     location: number;
     panTween: Phaser.Tween;
@@ -74,9 +71,7 @@ module LD43.State {
         bagR: new Phaser.Button(game, 763, 725, buttonSprite, this.panTo.bind(this, Game.LOCATION_FRIDGE), null, null, null, 1),
         fridgeL: new Phaser.Button(game, 836, 725, buttonSprite, this.panTo.bind(this, Game.LOCATION_BAG), null, null, null, 1),
         fridgeR: new Phaser.Button(game, 1563, 725, buttonSprite, this.panTo.bind(this, Game.LOCATION_TABLE), null, null, null, 1),
-        fridgeD: new Phaser.Button(game, 1200, 1320, buttonSprite, this.panTo.bind(this, Game.LOCATION_BIN), null, null, null, 1),
-        tableL: new Phaser.Button(game, 1640, 725, buttonSprite, this.panTo.bind(this, Game.LOCATION_FRIDGE), null, null, null, 1),
-        binU: new Phaser.Button(game, 1200, 1390, buttonSprite, this.panTo.bind(this, Game.LOCATION_FRIDGE), null, null, null, 1)
+        binL: new Phaser.Button(game, 1640, 725, buttonSprite, this.panTo.bind(this, Game.LOCATION_FRIDGE), null, null, null, 1)
       };
 
       for (const button in this.buttons) {
@@ -96,8 +91,7 @@ module LD43.State {
       this.buttons.bagR.angle = 90;
       this.buttons.fridgeL.angle = 270;
       this.buttons.fridgeR.angle = 90;
-      this.buttons.fridgeD.angle = 180;
-      this.buttons.tableL.angle = 270;
+      this.buttons.binL.angle = 270;
 
       this.add.button(994, 16, 'close-button', this.endGame, this, null, null, 1);
 
@@ -211,10 +205,6 @@ module LD43.State {
 
         case Game.LOCATION_TABLE:
           dest = {x: 1600};
-          break;
-
-        case Game.LOCATION_BIN:
-          dest = {y: 1360};
           break;
       }
 
