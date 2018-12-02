@@ -1,6 +1,7 @@
 module LD43.Entity {
   export class Food extends Phaser.Sprite {
     static UNIT_SIZE: number = 106;
+    static POINT_PER_CELL: number = 2;
 
     game: Game;
 
@@ -11,29 +12,41 @@ module LD43.Entity {
       x: number,
       y: number
     };
+    cellCount: number;
 
-    constructor(game, x?, y?, key?, frame?) {
-      super(game, x, y, key, frame);
-
+    constructor(game: Phaser.Game, id: number) {
+      super(game, 0, 0);
       this.anchor.set(0.5, 0.5);
 
-      // TODO: generate correct placeMaker
-      this.placeMaker = [
-        [
-          new Phaser.Sprite(game, 0, 0, 'green_block'),
-          new Phaser.Sprite(game, 0, Food.UNIT_SIZE, 'green_block')
-        ],
-        [
-          null,
-          new Phaser.Sprite(game, Food.UNIT_SIZE, Food.UNIT_SIZE, 'green_block')
-        ]
-      ];
+      const foodData = game.cache.getJSON('food');
+      const item = foodData[id];
+
+      this.loadTexture(item.asset);
+      this.cellCount = 0;
+      this.placeMaker = [];
+
+      item.shape.forEach((row, i) => {
+        this.placeMaker.push([]);
+
+        row.forEach((cell, j) => {
+          let val;
+
+          if (cell === 1) {
+            val = new Phaser.Sprite(game, i * Food.UNIT_SIZE, j * Food.UNIT_SIZE, 'green_block');
+            this.cellCount++;
+          } else {
+            val = null;
+          }
+
+          this.placeMaker[i].push(val);
+        });
+      });
 
       this.location = {
         storage: null,
         x: null,
         y: null
-      }
+      };
     }
 
     pickUp() {

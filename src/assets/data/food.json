@@ -1,17 +1,17 @@
 [
   {
     "name": "Cupcake",
-    "asset": "cupcake",
+    "asset": "1x1_cupcake",
     "shape": [
       [1]
     ]
   },
   {
     "name": "Sausage",
-    "asset": "sausage",
+    "asset": "food_block",
     "shape": [
-      [1,0],
-      [1,1]
+      [1,1],
+      [0,1]
     ]
   }
 ]

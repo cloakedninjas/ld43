@@ -9,7 +9,8 @@ module LD43.State {
       this.loadingBar = new Entity.PreloadBar(this.game);
 
       const img = [
-        'bg', 'food_block', 'green_block', 'red_block', 'arrow'
+        'bg', 'food_block', 'green_block', 'red_block', 'arrow',
+        '1x1_cupcake'
       ];
 
       const json = ['food'];
