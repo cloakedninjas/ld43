@@ -18,7 +18,6 @@ module LD43.Entity {
     };
     cellCount: number;
     spoilState: number;
-    spoilTimer: Phaser.TimerEvent;
     data: {
       name: string,
       asset: string,

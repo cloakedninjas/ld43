@@ -273,7 +273,9 @@ module LD43.State {
 
     pickupNewFood() {
       // TODO - randomize food
-      let f = new Entity.Food(this.game, 1);
+      let id = Math.floor(Phaser.Math.random(0, 4));
+
+      let f = new Entity.Food(this.game, id);
       f.events.onInputDown.add(this.pickUpFood.bind(this, f, false));
       this.add.existing(f);
 
