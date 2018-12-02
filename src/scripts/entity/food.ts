@@ -37,9 +37,6 @@ module LD43.Entity {
       this.loadTexture('food-' + this.data.asset + '-1');
       this.cellCount = 0;
       this.spoilState = Food.SPOIL_GOOD;
-
-      //this.spoilTimer = game.time.events.add(Phaser.Timer.SECOND * config.spoil_time_1, this.spoil, this, Food.SPOIL_OK);
-
       this.spoilTimer = game.time.create();
       this.spoilTimer.add(Phaser.Timer.SECOND * config.spoil_time_1, this.spoil, this, Food.SPOIL_OK);
 

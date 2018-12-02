@@ -347,6 +347,10 @@ module LD43.State {
     }
 
     pickUpFood(food: Entity.Food, firstTime: boolean) {
+      if (this.currentFood !== null) {
+        return;
+      }
+
       this.currentFood = food;
       food.pickUp();
       food.placeMaker.forEach((row) => {
