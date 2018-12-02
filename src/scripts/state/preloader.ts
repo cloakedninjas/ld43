@@ -15,31 +15,6 @@ module LD43.State {
       const json = ['food'];
       const music = ['title'];
 
-      /*const manifest = {
-        images: [
-          'bg', 'food_block', 'green_block', 'red_block',
-          'arrow'
-        ],
-        music: ['title'],
-        data: ['food']
-      };
-
-      const ext = {
-        images: 'png',
-        music: 'mp3',
-        data: 'json'
-      };
-
-      for (const type in manifest) {
-        let files = manifest[type];
-
-        files.forEach((file) => {
-          this.load.image(file, 'assets/' + type + '/' + file + '.' + ext[type]);
-        });
-      }*/
-
-      //
-
       img.forEach((file) => {
         this.load.image(file, 'assets/images/' + file + '.png');
       });

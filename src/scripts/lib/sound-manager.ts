@@ -8,7 +8,7 @@ module LD43.Lib {
       this.game = game;
 
       this.musicTracks = {
-        'title': new Phaser.Sound(game, 'title')
+        'title': new Phaser.Sound(game, 'title', 1, true)
       };
     }
 
