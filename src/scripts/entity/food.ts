@@ -11,7 +11,7 @@ module LD43.Entity {
     pickedUp: boolean = false;
     placeMaker: Phaser.Sprite[][];
     location: {
-      storage: number[][],
+      storage: Entity.Storage,
       x: number,
       y: number
     };

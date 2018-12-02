@@ -23,20 +23,13 @@ module LD43.State {
     location: number;
     panTween: Phaser.Tween;
 
-    storageBounds: {
-      fridge: {
-        top: Phaser.Rectangle,
-        middle: Phaser.Rectangle,
-        bottom: Phaser.Rectangle,
-      }
-    };
-
     storage: {
       fridge: {
-        top: number[][],
-        middle: number[][],
-        bottom: number[][],
-      }
+        top: Entity.Storage,
+        middle: Entity.Storage,
+        bottom: Entity.Storage,
+      },
+      table: Entity.Storage
     };
 
     binArea: Phaser.Rectangle;
@@ -45,8 +38,7 @@ module LD43.State {
     currentFood: Entity.Food;
     markerGroup: Phaser.Group;
     prevHover: {
-      storageBounds: Phaser.Rectangle,
-      storage: number[][],
+      storage: Entity.Storage,
       x: number,
       y: number,
     };
@@ -105,48 +97,44 @@ module LD43.State {
         size4 = (4 * Entity.Food.UNIT_SIZE),
         shelfX = 880;
 
-      this.storageBounds = {
-        fridge: {
-          top: new Phaser.Rectangle(shelfX, 163, size6, (2 * Entity.Food.UNIT_SIZE)),
-          middle: new Phaser.Rectangle(shelfX, 406, size6, size4),
-          bottom: new Phaser.Rectangle(shelfX, 858, size6, size4)
-        }
-      };
-
       this.storage = {
         fridge: {
-          top: [
+          top: new Entity.Storage(new Phaser.Rectangle(shelfX, 163, size6, (2 * Entity.Food.UNIT_SIZE)), [
             [1, 1],
             [1, 1],
             [1, 1],
             [1, 1],
             [1, 1],
             [1, 1]
-          ],
-          middle: [
+          ]),
+          middle: new Entity.Storage(new Phaser.Rectangle(shelfX, 406, size6, size4), [
             [1, 1, 0, 0],
             [1, 1, 1, 1],
             [1, 1, 1, 1],
             [1, 1, 1, 1],
             [1, 1, 1, 1],
             [1, 1, 0, 0]
-          ],
-          bottom: [
+          ]),
+          bottom: new Entity.Storage(new Phaser.Rectangle(shelfX, 858, size6, size4), [
             [1, 1, 1, 1],
             [1, 1, 1, 1],
             [1, 1, 1, 0],
             [1, 1, 1, 0],
             [1, 1, 1, 1],
             [1, 1, 1, 1]
-          ]
-        }
+          ])
+        },
+        table: new Entity.Storage(new Phaser.Rectangle(shelfX, 163, (3 * Entity.Food.UNIT_SIZE), Entity.Food.UNIT_SIZE), [
+          [1],
+          [1],
+          [1],
+        ])
       };
 
       this.binArea = new Phaser.Rectangle(70, 800, 303, 523);
 
       this.prevHover = {
         storage: null,
-        storageBounds: null,
         x: null,
         y: null,
       };
@@ -235,36 +223,32 @@ module LD43.State {
       const px = pointer.x + this.camera.x,
         py = pointer.y + this.camera.y;
 
-      let storageBounds: Phaser.Rectangle,
-        storage;
+      let storage: Entity.Storage;
 
       switch (this.location) {
         case Game.LOCATION_FRIDGE:
 
-          if (this.storageBounds.fridge.top.contains(px, py)) {
-            storageBounds = this.storageBounds.fridge.top;
+          if (this.storage.fridge.top.bounds.contains(px, py)) {
             storage = this.storage.fridge.top;
-          } else if (this.storageBounds.fridge.middle.contains(px, py)) {
-            storageBounds = this.storageBounds.fridge.middle;
+          } else if (this.storage.fridge.middle.bounds.contains(px, py)) {
             storage = this.storage.fridge.middle;
-          } else if (this.storageBounds.fridge.bottom.contains(px, py)) {
-            storageBounds = this.storageBounds.fridge.bottom;
+          } else if (this.storage.fridge.bottom.bounds.contains(px, py)) {
             storage = this.storage.fridge.bottom;
           }
 
-          if (storageBounds) {
+          if (storage) {
             // get closest cell to pointer
 
-            let x = Math.floor((px - storageBounds.x) / Entity.Food.UNIT_SIZE),
-              y = Math.floor((py - storageBounds.y) / Entity.Food.UNIT_SIZE),
+            let x = Math.floor((px - storage.bounds.x) / Entity.Food.UNIT_SIZE),
+              y = Math.floor((py - storage.bounds.y) / Entity.Food.UNIT_SIZE),
               cell;
 
             try {
-              cell = storage[x][y];
+              cell = storage.tileMap[x][y];
             } catch (e) {
             }
 
-            this.renderPlaceMarkerAt(storageBounds, storage, x, y);
+            this.renderPlaceMarkerAt(storage, x, y);
           } else {
             this.hidePlaceMaker();
           }
@@ -290,7 +274,7 @@ module LD43.State {
       }
     }
 
-    renderPlaceMarkerAt(storageBounds: Phaser.Rectangle, storage: number[][], x, y) {
+    renderPlaceMarkerAt(storage: Entity.Storage, x, y) {
       if (this.prevHover.storage === storage &&
         this.prevHover.x === x &&
         this.prevHover.y === y) {
@@ -298,7 +282,6 @@ module LD43.State {
       }
 
       this.prevHover.storage = storage;
-      this.prevHover.storageBounds = storageBounds;
       this.prevHover.x = x;
       this.prevHover.y = y;
 
@@ -312,7 +295,7 @@ module LD43.State {
             let storageCell;
 
             try {
-              storageCell = storage[x + i][y + j];
+              storageCell = storage.tileMap[x + i][y + j];
             } catch (e) {
             }
 
@@ -327,8 +310,8 @@ module LD43.State {
       });
 
       this.markerGroup.visible = true;
-      this.markerGroup.x = storageBounds.x + (x * Entity.Food.UNIT_SIZE);
-      this.markerGroup.y = storageBounds.y + (y * Entity.Food.UNIT_SIZE);
+      this.markerGroup.x = storage.bounds.x + (x * Entity.Food.UNIT_SIZE);
+      this.markerGroup.y = storage.bounds.y + (y * Entity.Food.UNIT_SIZE);
     }
 
     hidePlaceMaker() {
@@ -380,8 +363,8 @@ module LD43.State {
         y: this.prevHover.y
       }, placedInFridge);
 
-      let x = this.prevHover.storageBounds.x,
-        y = this.prevHover.storageBounds.y;
+      let x = this.prevHover.storage.bounds.x,
+        y = this.prevHover.storage.bounds.y;
 
       x += Entity.Food.UNIT_SIZE * this.prevHover.x;
       y += Entity.Food.UNIT_SIZE * this.prevHover.y;
@@ -405,11 +388,11 @@ module LD43.State {
       food.destroy();
     }
 
-    applyMarkerToStorage(food: Entity.Food, storage: number[][], x: number, y: number, placing: boolean) {
+    applyMarkerToStorage(food: Entity.Food, storage: Entity.Storage, x: number, y: number, placing: boolean) {
       food.placeMaker.forEach((row, i) => {
         row.forEach((markerCell, j) => {
           if (markerCell !== null) {
-            storage[x + i][y + j] = placing ? Game.CELL_OCCUPIED : Game.CELL_AVAILABLE;
+            storage.tileMap[x + i][y + j] = placing ? Game.CELL_OCCUPIED : Game.CELL_AVAILABLE;
           }
         });
       });
