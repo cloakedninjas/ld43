@@ -1,7 +1,6 @@
 module LD43.Entity {
   export class Food extends Phaser.Sprite {
     static UNIT_SIZE: number = 106;
-    static POINT_PER_CELL: number = 2;
 
     static SPOIL_GOOD: number = 1;
     static SPOIL_OK: number = 2;

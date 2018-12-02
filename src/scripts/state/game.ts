@@ -39,6 +39,8 @@ module LD43.State {
       }
     };
 
+    binArea: Phaser.Rectangle;
+
     foodPlaceable: boolean;
     currentFood: Entity.Food;
     markerGroup: Phaser.Group;
@@ -50,6 +52,10 @@ module LD43.State {
     };
 
     storedFood: Entity.Food[];
+    binnedScore: {
+      qty: number,
+      score: number
+    };
 
     init(opts) {
       this.titleElems = opts;
@@ -136,6 +142,8 @@ module LD43.State {
         }
       };
 
+      this.binArea = new Phaser.Rectangle(70, 800, 303, 523);
+
       this.prevHover = {
         storage: null,
         storageBounds: null,
@@ -149,6 +157,10 @@ module LD43.State {
       this.storedFood = [];
       this.currentFood = null;
       this.location = Game.LOCATION_BAG;
+      this.binnedScore = {
+        qty: 0,
+        score: 0
+      };
 
       this.input.addMoveCallback(this.onPointerMove, this);
       this.input.onDown.add(this.onInputDown, this);
@@ -264,19 +276,15 @@ module LD43.State {
     }
 
     onInputDown(pointer: Phaser.Pointer) {
-      if (
-        this.location === Game.LOCATION_BAG &&
-        this.currentFood === null &&
-        this.bagArea.contains(pointer.x, pointer.y)
-      ) {
+      if (this.location === Game.LOCATION_BAG && this.currentFood === null && this.bagArea.contains(pointer.x, pointer.y)) {
         this.pickupNewFood();
-        return;
-      } else if (this.location !== Game.LOCATION_FRIDGE) {
-        return;
-      }
-
-      if (this.currentFood !== null && this.foodPlaceable) {
-        this.placeFood();
+      } else if (this.currentFood !== null) {
+        if (this.location === Game.LOCATION_TABLE && this.binArea.contains(pointer.x, pointer.y)) {
+          this.binFood(this.currentFood);
+        }
+        else if (this.foodPlaceable) {
+          this.placeFood();
+        }
       } else {
         // nu-uh SFX
       }
@@ -387,6 +395,14 @@ module LD43.State {
 
       this.currentFood = null;
       this.markerGroup.removeAll();
+    }
+
+    binFood(food: Entity.Food) {
+      const config = this.game.cache.getJSON('config');
+      this.binnedScore.qty++;
+      this.binnedScore.score += food.cellCount * config.discard_penality_per_unit;
+      this.currentFood = null;
+      food.destroy();
     }
 
     applyMarkerToStorage(food: Entity.Food, storage: number[][], x: number, y: number, placing: boolean) {
