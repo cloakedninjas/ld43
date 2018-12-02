@@ -9,6 +9,7 @@ module LD43.State {
     static CELL_AVAILABLE: number = 1;
     static CELL_OCCUPIED: number = 2;
 
+    game:LD43.Game;
     bg: Phaser.Sprite;
     buttons: {
       bagR: Phaser.Button,
@@ -53,13 +54,15 @@ module LD43.State {
       this.game.camera.bounds.width = this.bg.width;
       this.game.camera.bounds.height = this.bg.height;
 
+      let buttonSprite = 'arrows';
+
       this.buttons = {
-        bagR: new Phaser.Button(this.game, 763, 725, 'arrow', this.panTo.bind(this, Game.LOCATION_FRIDGE)),
-        fridgeL: new Phaser.Button(this.game, 836, 725, 'arrow', this.panTo.bind(this, Game.LOCATION_BAG)),
-        fridgeR: new Phaser.Button(this.game, 1563, 725, 'arrow', this.panTo.bind(this, Game.LOCATION_TABLE)),
-        fridgeD: new Phaser.Button(this.game, 1200, 1320, 'arrow', this.panTo.bind(this, Game.LOCATION_BIN)),
-        tableL: new Phaser.Button(this.game, 1640, 725, 'arrow', this.panTo.bind(this, Game.LOCATION_FRIDGE)),
-        binU: new Phaser.Button(this.game, 1200, 1390, 'arrow', this.panTo.bind(this, Game.LOCATION_FRIDGE)),
+        bagR: new Phaser.Button(this.game, 763, 725, buttonSprite, this.panTo.bind(this, Game.LOCATION_FRIDGE), null, null, null, 1),
+        fridgeL: new Phaser.Button(this.game, 836, 725, buttonSprite, this.panTo.bind(this, Game.LOCATION_BAG), null, null, null, 1),
+        fridgeR: new Phaser.Button(this.game, 1563, 725, buttonSprite, this.panTo.bind(this, Game.LOCATION_TABLE), null, null, null, 1),
+        fridgeD: new Phaser.Button(this.game, 1200, 1320, buttonSprite, this.panTo.bind(this, Game.LOCATION_BIN), null, null, null, 1),
+        tableL: new Phaser.Button(this.game, 1640, 725, buttonSprite, this.panTo.bind(this, Game.LOCATION_FRIDGE), null, null, null, 1),
+        binU: new Phaser.Button(this.game, 1200, 1390, buttonSprite, this.panTo.bind(this, Game.LOCATION_FRIDGE), null, null, null, 1)
       };
 
       for (const button in this.buttons) {
@@ -69,10 +72,11 @@ module LD43.State {
         this.add.existing(b);
       }
 
-      this.buttons.fridgeL.scale.x = -1;
-      this.buttons.fridgeD.angle = 90;
-      this.buttons.tableL.scale.x = -1;
-      this.buttons.binU.angle = 270;
+      this.buttons.bagR.angle = 90;
+      this.buttons.fridgeL.angle = 270;
+      this.buttons.fridgeR.angle = 90;
+      this.buttons.fridgeD.angle = 180;
+      this.buttons.tableL.angle = 270;
 
       const size6 = (6 * Entity.Food.UNIT_SIZE),
         size4 = (4 * Entity.Food.UNIT_SIZE),
@@ -131,6 +135,8 @@ module LD43.State {
 
       this.input.addMoveCallback(this.onPointerMove, this);
       this.input.onDown.add(this.onInputDown, this);
+
+      //this.game.soundManager.playMusic('snackrifice');
 
       window['g'] = this;
     }
