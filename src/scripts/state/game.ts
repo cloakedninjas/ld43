@@ -37,7 +37,7 @@ module LD43.State {
     foodPlaceable: boolean;
     currentFood: Entity.Food;
     markerGroup: Phaser.Group;
-    prevHover: StorageLocation;
+    prevMarkerLocation: StorageLocation;
 
     binnedScore: {
       qty: number,
@@ -145,7 +145,7 @@ module LD43.State {
 
       this.binArea = new Phaser.Rectangle(70, 800, 303, 523);
 
-      this.prevHover = {
+      this.prevMarkerLocation = {
         storage: null,
         x: null,
         y: null,
@@ -265,8 +265,6 @@ module LD43.State {
       }
 
       if (storage) {
-        // get closest cell to pointer
-
         x = Math.floor((px - storage.bounds.x) / Entity.Food.UNIT_SIZE);
         y = Math.floor((py - storage.bounds.y) / Entity.Food.UNIT_SIZE);
 
@@ -296,11 +294,11 @@ module LD43.State {
     }
 
     renderPlaceMarkerAt(location: StorageLocation) {
-      if (this.prevHover === location) {
+      if (this.prevMarkerLocation === location) {
         return;
       }
 
-      this.prevHover = location;
+      this.prevMarkerLocation = location;
       this.foodPlaceable = true;
 
       // match up place marker cells with storage cells
@@ -372,28 +370,30 @@ module LD43.State {
     }
 
     placeFood() {
-      const placedInFridge = this.prevHover.storage === this.storage.fridge.top ||
-        this.prevHover.storage === this.storage.fridge.middle ||
-        this.prevHover.storage === this.storage.fridge.bottom;
+      const placedInFridge = this.prevMarkerLocation.storage === this.storage.fridge.top ||
+        this.prevMarkerLocation.storage === this.storage.fridge.middle ||
+        this.prevMarkerLocation.storage === this.storage.fridge.bottom;
+
+      let finalStop = this.pullFoodDown(this.currentFood, this.prevMarkerLocation);
 
       this.currentFood.drop({
-        storage: this.prevHover.storage,
-        x: this.prevHover.x,
-        y: this.prevHover.y
+        storage: finalStop.storage,
+        x: finalStop.x,
+        y: finalStop.y
       }, placedInFridge);
 
-      let x = this.prevHover.storage.bounds.x,
-        y = this.prevHover.storage.bounds.y;
+      let x = finalStop.storage.bounds.x,
+        y = finalStop.storage.bounds.y;
 
-      x += Entity.Food.UNIT_SIZE * this.prevHover.x;
-      y += Entity.Food.UNIT_SIZE * this.prevHover.y;
+      x += Entity.Food.UNIT_SIZE * finalStop.x;
+      y += Entity.Food.UNIT_SIZE * finalStop.y;
 
       x += this.currentFood.width / 2;
       y += this.currentFood.height / 2;
 
       this.currentFood.position.set(x, y);
 
-      this.applyMarkerToStorage(this.currentFood, this.prevHover, true);
+      this.applyMarkerToStorage(this.currentFood, finalStop, true);
 
       if (placedInFridge) {
         this.game.soundManager.playSfx('valid-drop');
@@ -403,6 +403,41 @@ module LD43.State {
 
       this.currentFood = null;
       this.markerGroup.removeAll();
+    }
+
+    pullFoodDown(food: Entity.Food, location: StorageLocation): StorageLocation {
+      // get footprint (list of xs)
+      const footprint = food.getFootprint();
+
+      // find highest occupied y in storage for all given xs
+      let i = 0;
+      let overallMaxY = 10;
+
+      for (let x = location.x, endX = location.x + footprint.length; x < endX; x++) {
+        let maxY = 0;
+        const row = location.storage.tileMap[x];
+
+        if (footprint[i] === Entity.Food.SHAPE_FILL) {
+          for (let j = 0; j < row.length; j++) {
+            const cell = row[j];
+
+            if (cell !== Entity.Storage.CELL_AVAILABLE) {
+              break;
+            }
+
+            maxY = Math.max(j, maxY);
+          }
+        }
+
+        overallMaxY = Math.min(overallMaxY, maxY);
+        i++;
+      }
+
+      return {
+        storage: location.storage,
+        x: location.x,
+        y: overallMaxY - food.data.shape[0].length + 1 // deduct food height
+      }
     }
 
     binFood(food: Entity.Food) {

@@ -6,6 +6,9 @@ module LD43.Entity {
     static SPOIL_OK: number = 2;
     static SPOIL_BAD: number = 3;
 
+    static SHAPE_EMPTY: number = 0;
+    static SHAPE_FILL: number = 1;
+
     game: Game;
 
     pickedUp: boolean = false;
@@ -45,7 +48,7 @@ module LD43.Entity {
         row.forEach((cell, j) => {
           let val;
 
-          if (cell === 1) {
+          if (cell === Food.SHAPE_FILL) {
             val = new Phaser.Sprite(game, i * Food.UNIT_SIZE, j * Food.UNIT_SIZE, 'box_green');
             this.cellCount++;
           } else {
@@ -122,6 +125,17 @@ module LD43.Entity {
       }
 
       return score;
+    }
+
+    getFootprint(): number[] {
+      const footprint = [];
+
+      this.data.shape.forEach((row) => {
+        let lastCell = row[row.length - 1];
+        footprint.push(lastCell);
+      });
+
+      return footprint;
     }
 
     update() {
