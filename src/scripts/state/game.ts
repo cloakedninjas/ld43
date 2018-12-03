@@ -188,9 +188,6 @@ module LD43.State {
 
       game.soundManager.playMusic('game', true, true, true);
 
-      // TODO - remove
-      window['g'] = this;
-
       // init complete begin transition
 
       const delay = 0,

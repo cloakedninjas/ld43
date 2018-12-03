@@ -83,7 +83,7 @@ module.exports = function (grunt) {
     uglify: {
       prod: {
         files: {
-          'public/game.min.js': ['public/game.min.js']
+          'public/game.min.js': ['public/vendor/phaser/phaser.js', 'public/game.min.js'],
         }
       }
     }
