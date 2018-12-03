@@ -472,6 +472,7 @@ module LD43.State {
       this.binnedScore.qty++;
       this.binnedScore.score += food.cellCount * config.discard_penalty_per_unit;
       this.currentFood = null;
+      this.markerGroup.removeAll(true);
       food.destroy();
 
       this.game.soundManager.playSfx('bin');
