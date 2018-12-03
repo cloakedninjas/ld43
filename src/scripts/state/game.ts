@@ -283,8 +283,6 @@ module LD43.State {
       } else {
         this.hidePlaceMaker();
       }
-
-
     }
 
     onInputDown(pointer: Phaser.Pointer) {
@@ -343,6 +341,7 @@ module LD43.State {
     }
 
     hidePlaceMaker() {
+      this.foodPlaceable = false;
       this.markerGroup.visible = false;
     }
 
