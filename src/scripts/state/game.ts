@@ -29,7 +29,10 @@ module LD43.State {
         middle: Entity.Storage,
         bottom: Entity.Storage,
       },
-      table: Entity.Storage
+      table: Entity.Storage,
+      cupboardLeft: Entity.Storage,
+      cupboardRight: Entity.Storage,
+      floor: Entity.Storage
     };
 
     binArea: Phaser.Rectangle;
@@ -93,14 +96,15 @@ module LD43.State {
 
       this.add.button(994, 16, 'close-button', this.endGame, this, null, null, 1);
 
-      const size6 = (6 * Entity.Food.UNIT_SIZE),
-        size4 = (4 * Entity.Food.UNIT_SIZE),
-        size3 = (3 * Entity.Food.UNIT_SIZE),
+      const size6 = 6 * Entity.Food.UNIT_SIZE,
+        size4 = 4 * Entity.Food.UNIT_SIZE,
+        size3 = 3 * Entity.Food.UNIT_SIZE,
+        size2 = 2 * Entity.Food.UNIT_SIZE,
         shelfX = 880;
 
       this.storage = {
         fridge: {
-          top: new Entity.Storage(new Phaser.Rectangle(shelfX, 163, size6, (2 * Entity.Food.UNIT_SIZE)), [
+          top: new Entity.Storage(new Phaser.Rectangle(shelfX, 163, size6, size2), [
             [1, 1],
             [1, 1],
             [1, 1],
@@ -128,7 +132,22 @@ module LD43.State {
         table: new Entity.Storage(new Phaser.Rectangle(54, 1186, size3, Entity.Food.UNIT_SIZE), [
           [1],
           [1],
-          [1],
+          [1]
+        ]),
+        cupboardLeft: new Entity.Storage(new Phaser.Rectangle(379, 49, size3, size3), [
+          [1,1,1],
+          [1,1,1],
+          [1,1,1]
+        ]),
+        cupboardRight: new Entity.Storage(new Phaser.Rectangle(2035, 50, size3, size3), [
+          [1,1,1],
+          [1,1,1],
+          [1,1,1]
+        ]),
+        floor: new Entity.Storage(new Phaser.Rectangle(2035, 1040, size2, size3), [
+          [1,1],
+          [1,1],
+          [1,1]
         ])
       };
 
@@ -232,6 +251,8 @@ module LD43.State {
         case Game.LOCATION_TABLE:
           if (this.storage.table.bounds.contains(px, py)) {
             storage = this.storage.table;
+          } else if (this.storage.cupboardLeft.bounds.contains(px, py)) {
+            storage = this.storage.cupboardLeft;
           }
           break;
         case Game.LOCATION_FRIDGE:
@@ -242,10 +263,14 @@ module LD43.State {
           } else if (this.storage.fridge.bottom.bounds.contains(px, py)) {
             storage = this.storage.fridge.bottom;
           }
-
           break;
-        default:
-          this.hidePlaceMaker();
+        case Game.LOCATION_BIN:
+          if (this.storage.cupboardRight.bounds.contains(px, py)) {
+            storage = this.storage.cupboardRight;
+          } else if (this.storage.floor.bounds.contains(px, py)) {
+            storage = this.storage.floor;
+          }
+          break;
       }
 
       if (storage) {
