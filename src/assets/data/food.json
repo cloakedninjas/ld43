@@ -4,20 +4,23 @@
     "asset": "cupcake",
     "shape": [
       [1]
-    ]
+    ],
+    "weight": 0.2
   }, {
     "name": "Chicken Leg",
     "asset": "chickenleg",
     "shape": [
       [1],
       [1]
-    ]
+    ],
+    "weight": 0.2
   }, {
     "name": "Milk",
     "asset": "milk",
     "shape": [
       [1,1]
-    ]
+    ],
+    "weight": 0.2
   }, {
     "name": "Donuts",
     "asset": "donut",
@@ -25,7 +28,8 @@
       [1,1,1],
       [1,0,1],
       [1,1,1]
-    ]
+    ],
+    "weight": 0.1
   }, {
     "name": "Watermelon",
     "asset": "watermelon",
@@ -33,7 +37,8 @@
       [1,1],
       [0,1],
       [1,1]
-    ]
+    ],
+    "weight": 0.1
   }, {
     "name": "Sausages",
     "asset": "sausage",
@@ -41,13 +46,15 @@
       [1,0],
       [1,1],
       [0,1]
-    ]
+    ],
+    "weight": 0.2
   }, {
     "name": "Banana",
     "asset": "banana",
     "shape": [
       [1,1],
       [0,1]
-    ]
+    ],
+    "weight": 0.2
   }
 ]

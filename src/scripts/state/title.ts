@@ -30,7 +30,7 @@ module LD43.State {
 
       this.logo.bringToTop();
 
-      this.game.soundManager.playMusic('title');
+      this.game.soundManager.playMusic('title', true, true, true);
     }
 
     shutdown() {

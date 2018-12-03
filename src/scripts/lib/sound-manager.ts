@@ -27,7 +27,7 @@ module LD43.Lib {
       }, this);
     }
 
-    playMusic(track: string, fadeIn: boolean = true, fadeOutCurrent: boolean = true) {
+    playMusic(track: string, fadeIn: boolean = true, fadeOutCurrent: boolean = true, loop: boolean = false) {
       if (this.currentTrack && this.currentTrack.isPlaying) {
         if (fadeOutCurrent) {
           this.currentTrack.fadeOut(500);
@@ -39,9 +39,9 @@ module LD43.Lib {
       let newTrack: Phaser.Sound = this.musicTracks[track];
 
       if (fadeIn) {
-        newTrack.fadeIn(500, true);
+        newTrack.fadeIn(500, loop);
       } else {
-        newTrack.play();
+        newTrack.play(null, null, null, loop);
       }
 
       this.currentTrack = newTrack;

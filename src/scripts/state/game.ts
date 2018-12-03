@@ -44,6 +44,8 @@ module LD43.State {
       score: number
     };
 
+    weightedTable: number[];
+
     init(opts) {
       this.titleElems = opts;
     }
@@ -128,19 +130,19 @@ module LD43.State {
           [1]
         ]),
         cupboardLeft: new Entity.Storage(new Phaser.Rectangle(379, 49, size3, size3), [
-          [1,1,1],
-          [1,1,1],
-          [1,1,1]
+          [1, 1, 1],
+          [1, 1, 1],
+          [1, 1, 1]
         ]),
         cupboardRight: new Entity.Storage(new Phaser.Rectangle(2035, 50, size3, size3), [
-          [1,1,1],
-          [1,1,1],
-          [1,1,1]
+          [1, 1, 1],
+          [1, 1, 1],
+          [1, 1, 1]
         ]),
         floor: new Entity.Storage(new Phaser.Rectangle(2035, 1040, size2, size3), [
-          [1,1],
-          [1,1],
-          [1,1]
+          [1, 1],
+          [1, 1],
+          [1, 1]
         ])
       };
 
@@ -164,11 +166,27 @@ module LD43.State {
         score: 0
       };
 
+      this.weightedTable = [];
+
+      let i, j, spec = {};
+
+      const food = this.game.cache.getJSON('food');
+
+      food.forEach((f, id) => {
+        spec[id] = f.weight;
+      });
+
+      for (i in spec) {
+        for (j = 0; j < spec[i] * 10; j++) {
+          this.weightedTable.push(i);
+        }
+      }
+
       this.input.addMoveCallback(this.onPointerMove, this);
       this.input.onDown.add(this.onInputDown, this);
       this.input.onUp.add(this.onInputUp, this);
 
-      game.soundManager.playMusic('game');
+      game.soundManager.playMusic('game', true, true, true);
 
       // TODO - remove
       window['g'] = this;
@@ -350,9 +368,8 @@ module LD43.State {
     }
 
     pickupNewFood() {
-      const food = this.game.cache.getJSON('food');
-
-      let id = Math.floor(Phaser.Math.random(0, food.length));
+      let id = this.weightedTable[Math.floor(Math.random() * this.weightedTable.length)];
+      // let id = Math.floor(Phaser.Math.random(0, food.length));
 
       let f = new Entity.Food(this.game, id);
       f.events.onInputDown.add(this.pickUpFood.bind(this, f, false));
@@ -471,7 +488,7 @@ module LD43.State {
       }
     }
 
-    applyMarkerToStorage(food: Entity.Food, location:StorageLocation, placing: boolean) {
+    applyMarkerToStorage(food: Entity.Food, location: StorageLocation, placing: boolean) {
       food.placeMaker.forEach((row, i) => {
         row.forEach((markerCell, j) => {
           if (markerCell !== null) {
@@ -554,6 +571,23 @@ module LD43.State {
         discarded: this.binnedScore,
         empty: empty
       });
+    }
+
+    weightedRand(spec) {
+      let i, j, table = [];
+
+      for (i in spec) {
+        // The constant 10 below should be computed based on the
+        // weights in the spec for a correct and optimal table size.
+        // E.g. the spec {0:0.999, 1:0.001} will break this impl.
+        for (j = 0; j < spec[i] * 10; j++) {
+          table.push(i);
+        }
+      }
+
+      return function () {
+        return table[Math.floor(Math.random() * table.length)];
+      }
     }
   }
 }

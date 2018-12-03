@@ -74,7 +74,7 @@ module LD43.State {
       credit.width = pWidth;
       credit.height = pHeight;
 
-      this.game.soundManager.playMusic('end');
+      this.game.soundManager.playMusic('end', true, true);
     }
 
     replay() {
