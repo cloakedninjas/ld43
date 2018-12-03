@@ -5,9 +5,6 @@ module LD43.State {
     static LOCATION_FRIDGE: number = 1;
     static LOCATION_BIN: number = 2;
 
-    static CELL_AVAILABLE: number = 1;
-    static CELL_OCCUPIED: number = 2;
-
     game: LD43.Game;
     titleElems: any;
 
@@ -398,22 +395,22 @@ module LD43.State {
 
       this.applyMarkerToStorage(this.currentFood, this.prevHover, true);
 
-      this.currentFood = null;
-      this.markerGroup.removeAll();
-
       if (placedInFridge) {
         this.game.soundManager.playSfx('valid-drop');
       } else {
         this.game.soundManager.playSfx('put-down');
       }
+
+      this.currentFood = null;
+      this.markerGroup.removeAll();
     }
 
     binFood(food: Entity.Food) {
       const config = this.game.cache.getJSON('config');
       this.binnedScore.qty++;
-      this.binnedScore.score += food.cellCount * config.discard_penality_per_unit;
+      this.binnedScore.score += food.cellCount * config.discard_penalty_per_unit;
       this.currentFood = null;
-      food.destroy();
+      food.destroy(true);
 
       this.game.soundManager.playSfx('bin');
     }
@@ -422,15 +419,62 @@ module LD43.State {
       food.placeMaker.forEach((row, i) => {
         row.forEach((markerCell, j) => {
           if (markerCell !== null) {
-            location.storage.tileMap[location.x + i][location.y + j] = placing ? Game.CELL_OCCUPIED : Game.CELL_AVAILABLE;
+            location.storage.tileMap[location.x + i][location.y + j] = placing ? Entity.Storage.CELL_OCCUPIED : Entity.Storage.CELL_AVAILABLE;
           }
         });
       });
     }
 
     endGame() {
+      const config = this.game.cache.getJSON('config');
+
+      // fridge food
+      const fridge = {
+        qty: 0,
+        score: 0
+      };
+
+      for (let storage in this.storage.fridge) {
+        this.storage.fridge[storage].items.forEach((food) => {
+          fridge.qty++;
+          fridge.score += food.calcScore()
+        }, this);
+      }
+
+      // leftovers
+
+      const discardStorage = [this.storage.cupboardRight, this.storage.cupboardLeft, this.storage.table, this.storage.floor];
+
+      discardStorage.forEach((storage) => {
+        storage.items.forEach((food) => {
+          this.binFood(food);
+        }, this);
+      }, this);
+
+      // empty fridge spaces
+      const empty = {
+        qty: 0,
+        score: 0
+      };
+
+      for (let storage in this.storage.fridge) {
+        this.storage.fridge[storage].tileMap.forEach((row) => {
+          row.forEach((cell) => {
+            if (cell === Entity.Storage.CELL_AVAILABLE) {
+              empty.qty++;
+            }
+          })
+        })
+      }
+
+      empty.score = empty.qty * config.empty_penalty_per_unit;
+
       this.game.soundManager.playSfx('close-fridge');
-      this.game.state.start('scores');
+      this.game.state.start('scores', true, false, {
+        fridge: fridge,
+        discarded: this.binnedScore,
+        empty: empty
+      });
     }
   }
 }

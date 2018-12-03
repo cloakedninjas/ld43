@@ -67,6 +67,14 @@ module LD43.Entity {
       this.pickedUp = true;
       this.scale.set(0.6);
       this.inputEnabled = false;
+
+      if (this.location.storage) {
+        const index = this.location.storage.items.indexOf(this);
+
+        if (index !== -1) {
+          this.location.storage.items.splice(index, 1);
+        }
+      }
     }
 
     drop(location: StorageLocation, inFridge: boolean) {
@@ -75,6 +83,7 @@ module LD43.Entity {
       this.inputEnabled = true;
 
       this.location = location;
+      this.location.storage.items.push(this);
 
       if (inFridge) {
         this.spoilTimer.pause();

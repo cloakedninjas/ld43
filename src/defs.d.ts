@@ -3,3 +3,8 @@ interface StorageLocation {
   x: number,
   y: number
 }
+
+interface Score {
+  qty: number,
+  score: number
+}
