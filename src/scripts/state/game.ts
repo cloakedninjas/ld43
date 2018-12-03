@@ -402,8 +402,12 @@ module LD43.State {
         this.game.soundManager.playSfx('put-down');
       }
 
-      this.currentFood = null;
       this.markerGroup.removeAll();
+
+      // delay pickup to prevent instant pickup of nearby item
+      this.game.time.events.add(100, () => {
+        this.currentFood = null;
+      }, this);
     }
 
     pullFoodDown(food: Entity.Food, location: StorageLocation): StorageLocation {
@@ -412,14 +416,14 @@ module LD43.State {
 
       // find highest occupied y in storage for all given xs
       let i = 0;
-      let overallMaxY = 10;
+      let overallMaxY = 10; // arbitrary large number
 
       for (let x = location.x, endX = location.x + footprint.length; x < endX; x++) {
         let maxY = 0;
         const row = location.storage.tileMap[x];
 
         if (footprint[i] === Entity.Food.SHAPE_FILL) {
-          for (let j = 0; j < row.length; j++) {
+          for (let j = location.y; j < row.length; j++) {
             const cell = row[j];
 
             if (cell !== Entity.Storage.CELL_AVAILABLE) {
