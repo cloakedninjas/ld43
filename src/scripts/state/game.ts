@@ -42,7 +42,6 @@ module LD43.State {
     markerGroup: Phaser.Group;
     prevHover: StorageLocation;
 
-    storedFood: Entity.Food[];
     binnedScore: {
       qty: number,
       score: number
@@ -158,7 +157,6 @@ module LD43.State {
       this.markerGroup = new Phaser.Group(game);
       this.add.existing(this.markerGroup);
 
-      this.storedFood = [];
       this.currentFood = null;
       this.location = Game.LOCATION_TABLE;
       this.binnedScore = {
@@ -376,9 +374,7 @@ module LD43.State {
     placeFood() {
       const placedInFridge = this.prevHover.storage === this.storage.fridge.top ||
         this.prevHover.storage === this.storage.fridge.middle ||
-        this.prevHover.storage === this.storage.fridge.bottom
-
-      this.storedFood.push(this.currentFood);
+        this.prevHover.storage === this.storage.fridge.bottom;
 
       this.currentFood.drop({
         storage: this.prevHover.storage,

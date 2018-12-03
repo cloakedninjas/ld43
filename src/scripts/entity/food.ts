@@ -78,6 +78,7 @@ module LD43.Entity {
 
       if (inFridge) {
         this.spoilTimer.pause();
+        console.log('points:', this.calcScore());
       } else {
         this.spoilTimer.resume();
       }
@@ -91,6 +92,27 @@ module LD43.Entity {
       }
 
       console.log(this.data.name, this.spoilState);
+    }
+
+    calcScore() {
+      const config = this.game.cache.getJSON('config');
+      let score = config.base_score_per_unit * this.cellCount;
+
+      switch (this.spoilState) {
+        case Food.SPOIL_GOOD:
+          score *= config.spoil_good_multiplier;
+          break;
+
+        case Food.SPOIL_OK:
+          score *= config.spoil_ok_multiplier;
+          break;
+
+        case Food.SPOIL_BAD:
+          score *= config.spoil_bad_multiplier;
+          break;
+      }
+
+      return score;
     }
 
     update() {
