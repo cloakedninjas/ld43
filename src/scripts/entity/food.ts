@@ -87,7 +87,6 @@ module LD43.Entity {
 
       if (inFridge) {
         this.spoilTimer.pause();
-        console.log('points:', this.calcScore());
       } else {
         this.spoilTimer.resume();
       }
