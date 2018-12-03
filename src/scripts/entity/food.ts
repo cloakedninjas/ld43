@@ -138,6 +138,11 @@ module LD43.Entity {
       return footprint;
     }
 
+    destroy() {
+      this.spoilTimer.destroy();
+      super.destroy();
+    }
+
     update() {
       if (this.pickedUp) {
         let game = this.game;
