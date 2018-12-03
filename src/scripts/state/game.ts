@@ -204,6 +204,7 @@ module LD43.State {
     cleanupIntro() {
       this.titleElems.bg.destroy();
       this.titleElems.logo.destroy();
+      this.titleElems = null;
     }
 
     panTo(location: number) {
