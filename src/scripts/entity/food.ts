@@ -10,11 +10,7 @@ module LD43.Entity {
 
     pickedUp: boolean = false;
     placeMaker: Phaser.Sprite[][];
-    location: {
-      storage: Entity.Storage,
-      x: number,
-      y: number
-    };
+    location: StorageLocation;
     cellCount: number;
     spoilState: number;
     spoilTimer: Phaser.Timer;
@@ -73,14 +69,12 @@ module LD43.Entity {
       this.inputEnabled = false;
     }
 
-    drop(location, inFridge: boolean) {
+    drop(location: StorageLocation, inFridge: boolean) {
       this.pickedUp = false;
       this.scale.set(1);
       this.inputEnabled = true;
 
-      this.location.storage = location.storage;
-      this.location.x = location.x;
-      this.location.y = location.y;
+      this.location = location;
 
       if (inFridge) {
         this.spoilTimer.pause();

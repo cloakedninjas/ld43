@@ -40,11 +40,7 @@ module LD43.State {
     foodPlaceable: boolean;
     currentFood: Entity.Food;
     markerGroup: Phaser.Group;
-    prevHover: {
-      storage: Entity.Storage,
-      x: number,
-      y: number,
-    };
+    prevHover: StorageLocation;
 
     storedFood: Entity.Food[];
     binnedScore: {
@@ -279,7 +275,11 @@ module LD43.State {
         x = Math.floor((px - storage.bounds.x) / Entity.Food.UNIT_SIZE);
         y = Math.floor((py - storage.bounds.y) / Entity.Food.UNIT_SIZE);
 
-        this.renderPlaceMarkerAt(storage, x, y);
+        this.renderPlaceMarkerAt({
+          storage: storage,
+          x: x,
+          y: y
+        });
       } else {
         this.hidePlaceMaker();
       }
@@ -300,17 +300,12 @@ module LD43.State {
       }
     }
 
-    renderPlaceMarkerAt(storage: Entity.Storage, x, y) {
-      if (this.prevHover.storage === storage &&
-        this.prevHover.x === x &&
-        this.prevHover.y === y) {
+    renderPlaceMarkerAt(location: StorageLocation) {
+      if (this.prevHover === location) {
         return;
       }
 
-      this.prevHover.storage = storage;
-      this.prevHover.x = x;
-      this.prevHover.y = y;
-
+      this.prevHover = location;
       this.foodPlaceable = true;
 
       // match up place marker cells with storage cells
@@ -321,7 +316,7 @@ module LD43.State {
             let storageCell;
 
             try {
-              storageCell = storage.tileMap[x + i][y + j];
+              storageCell = location.storage.tileMap[location.x + i][location.y + j];
             } catch (e) {
             }
 
@@ -336,8 +331,8 @@ module LD43.State {
       });
 
       this.markerGroup.visible = true;
-      this.markerGroup.x = storage.bounds.x + (x * Entity.Food.UNIT_SIZE);
-      this.markerGroup.y = storage.bounds.y + (y * Entity.Food.UNIT_SIZE);
+      this.markerGroup.x = location.storage.bounds.x + (location.x * Entity.Food.UNIT_SIZE);
+      this.markerGroup.y = location.storage.bounds.y + (location.y * Entity.Food.UNIT_SIZE);
     }
 
     hidePlaceMaker() {
@@ -373,7 +368,8 @@ module LD43.State {
       });
 
       if (!firstTime) {
-        this.applyMarkerToStorage(food, food.location.storage, food.location.x, food.location.y, false);
+        this.applyMarkerToStorage(food, food.location, false);
+        this.renderPlaceMarkerAt(food.location);
       }
     }
 
@@ -401,7 +397,7 @@ module LD43.State {
 
       this.currentFood.position.set(x, y);
 
-      this.applyMarkerToStorage(this.currentFood, this.prevHover.storage, this.prevHover.x, this.prevHover.y, true);
+      this.applyMarkerToStorage(this.currentFood, this.prevHover, true);
 
       this.currentFood = null;
       this.markerGroup.removeAll();
@@ -415,11 +411,11 @@ module LD43.State {
       food.destroy();
     }
 
-    applyMarkerToStorage(food: Entity.Food, storage: Entity.Storage, x: number, y: number, placing: boolean) {
+    applyMarkerToStorage(food: Entity.Food, location:StorageLocation, placing: boolean) {
       food.placeMaker.forEach((row, i) => {
         row.forEach((markerCell, j) => {
           if (markerCell !== null) {
-            storage.tileMap[x + i][y + j] = placing ? Game.CELL_OCCUPIED : Game.CELL_AVAILABLE;
+            location.storage.tileMap[location.x + i][location.y + j] = placing ? Game.CELL_OCCUPIED : Game.CELL_AVAILABLE;
           }
         });
       });
