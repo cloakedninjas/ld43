@@ -166,6 +166,7 @@ module LD43.State {
 
       this.input.addMoveCallback(this.onPointerMove, this);
       this.input.onDown.add(this.onInputDown, this);
+      this.input.onUp.add(this.onInputUp, this);
 
       game.soundManager.playMusic('game');
 
@@ -300,6 +301,17 @@ module LD43.State {
         } else if (this.markerGroup.visible) {
           this.game.soundManager.playSfx('invalid-drop');
         }
+      }
+    }
+
+    /**
+     * Touch support
+     */
+    onInputUp(pointer: Phaser.Pointer) {
+      if (this.currentFood !== null && this.foodPlaceable) {
+        this.placeFood();
+      } else if (this.location === Game.LOCATION_BIN && this.binArea.contains(pointer.x, pointer.y)) {
+        this.binFood(this.currentFood);
       }
     }
 
