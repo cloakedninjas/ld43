@@ -36,6 +36,8 @@ module LD43.State {
         return;
       }
 
+      this.bg.inputEnabled = false;
+
       this.game.state.start('game', false, false, {
         logo: this.logo,
         bg: this.bg
