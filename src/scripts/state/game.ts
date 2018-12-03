@@ -290,10 +290,8 @@ module LD43.State {
       }
     }
 
-    onInputDown(pointer: Phaser.Pointer) {
-      if (this.location === Game.LOCATION_TABLE && this.currentFood === null && this.bagArea.contains(pointer.x, pointer.y)) {
-        this.pickupNewFood();
-      } else if (this.currentFood !== null) {
+    onInputUp(pointer: Phaser.Pointer) {
+      if (this.currentFood !== null) {
         if (this.location === Game.LOCATION_BIN && this.binArea.contains(pointer.x, pointer.y)) {
           this.binFood(this.currentFood);
         }
@@ -305,14 +303,9 @@ module LD43.State {
       }
     }
 
-    /**
-     * Touch support
-     */
-    onInputUp(pointer: Phaser.Pointer) {
-      if (this.currentFood !== null && this.foodPlaceable) {
-        this.placeFood();
-      } else if (this.location === Game.LOCATION_BIN && this.binArea.contains(pointer.x, pointer.y)) {
-        this.binFood(this.currentFood);
+    onInputDown(pointer: Phaser.Pointer) {
+      if (this.location === Game.LOCATION_TABLE && this.currentFood === null && this.bagArea.contains(pointer.x, pointer.y)) {
+        this.pickupNewFood();
       }
     }
 
