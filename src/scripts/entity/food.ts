@@ -87,11 +87,12 @@ module LD43.Entity {
     spoil(state: number) {
       this.spoilState = state;
 
+      let key = this.key.toString().replace(/-\d/, '-' + this.spoilState);
+      this.loadTexture(key);
+
       if (this.spoilState === Food.SPOIL_BAD) {
         this.spoilTimer.destroy();
       }
-
-      console.log(this.data.name, this.spoilState);
     }
 
     calcScore() {

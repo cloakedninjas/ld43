@@ -23,7 +23,7 @@ module LD43.State {
       });
 
       food.forEach((file) => {
-        for (let i = 1; i <= 1; i++) {
+        for (let i = 1; i <= 3; i++) {
           this.load.image('food-' + file + '-' + i, 'assets/images/food/' + file + '_' + i + '.png');
         }
       });
