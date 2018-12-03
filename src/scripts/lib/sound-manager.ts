@@ -8,7 +8,9 @@ module LD43.Lib {
       this.game = game;
 
       this.musicTracks = {
-        'title': new Phaser.Sound(game, 'title', 1, true)
+        'title': new Phaser.Sound(game, 'snackrifice-title', 1, true),
+        'game': new Phaser.Sound(game, 'snackrifice', 1, true),
+        'end': new Phaser.Sound(game, 'snackrifice-end', 1, false),
       };
     }
 
@@ -28,6 +30,8 @@ module LD43.Lib {
       } else {
         newTrack.play();
       }
+
+      this.currentTrack = newTrack;
     }
   }
 }

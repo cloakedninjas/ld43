@@ -1,6 +1,6 @@
 module LD43.State {
   export class Title extends Phaser.State {
-
+    game: LD43.Game;
     logo: any;
     bg: Phaser.Sprite;
     arrow: Phaser.Sprite;
@@ -23,6 +23,8 @@ module LD43.State {
       }, 600, Phaser.Easing.Sinusoidal.Out, true, 0, Infinity, true);
 
       this.logo.bringToTop();
+
+      this.game.soundManager.playMusic('title');
     }
 
     shutdown() {

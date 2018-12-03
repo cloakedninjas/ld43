@@ -1,5 +1,7 @@
 module LD43.State {
   export class Scores extends Phaser.State {
+    game: LD43.Game;
+
     create() {
       this.add.sprite(0, 0, 'end_screen');
 
@@ -32,7 +34,7 @@ module LD43.State {
       text = this.game.add.text(scoreX, 707, '5678', fontStyle);
       text.anchor.set(0.5);
 
-      // spoiled
+      // empty
 
       text = this.game.add.text(qtyX, 758, '1234', fontStyle);
       text.anchor.set(0.5);
@@ -40,14 +42,7 @@ module LD43.State {
       text = this.game.add.text(scoreX, 778, '5678', fontStyle);
       text.anchor.set(0.5);
 
-
-      // empty
-
-      text = this.game.add.text(qtyX, 830, '1234', fontStyle);
-      text.anchor.set(0.5);
-
-      text = this.game.add.text(scoreX, 850, '5678', fontStyle);
-      text.anchor.set(0.5);
+      this.game.soundManager.playMusic('end');
     }
   }
 }

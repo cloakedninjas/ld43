@@ -167,7 +167,7 @@ module LD43.State {
       this.input.addMoveCallback(this.onPointerMove, this);
       this.input.onDown.add(this.onInputDown, this);
 
-      //game.soundManager.playMusic('snackrifice');
+      game.soundManager.playMusic('game');
 
       // TODO - remove
       window['g'] = this;
