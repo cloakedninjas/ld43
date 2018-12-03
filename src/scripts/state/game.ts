@@ -439,38 +439,23 @@ module LD43.State {
     }
 
     pullFoodDown(food: Entity.Food, location: StorageLocation): StorageLocation {
-      // get footprint (list of xs)
-      const footprint = food.getFootprint();
+      return location;
+      // Anna doesn't like it
+      /*let y;
 
-      // find highest occupied y in storage for all given xs
-      let i = 0;
-      let overallMaxY = 10; // arbitrary large number
+      for (y = location.storage.tileMap[0].length; y >= 0; y--) {
+        // for each rows, starting at bottom
 
-      for (let x = location.x, endX = location.x + footprint.length; x < endX; x++) {
-        let maxY = 0;
-        const row = location.storage.tileMap[x];
-
-        if (footprint[i] === Entity.Food.SHAPE_FILL) {
-          for (let j = location.y; j < row.length; j++) {
-            const cell = row[j];
-
-            if (cell !== Entity.Storage.CELL_AVAILABLE) {
-              break;
-            }
-
-            maxY = Math.max(j, maxY);
-          }
+        if (this.isFoodPlaceable(food, location, location.x, y)) {
+          break;
         }
-
-        overallMaxY = Math.min(overallMaxY, maxY);
-        i++;
       }
 
       return {
         storage: location.storage,
         x: location.x,
-        y: overallMaxY - food.data.shape[0].length + 1 // deduct food height
-      }
+        y: y
+      };*/
     }
 
     binFood(food: Entity.Food, endOfGame: boolean = false) {
@@ -494,6 +479,29 @@ module LD43.State {
           }
         });
       });
+    }
+
+    isFoodPlaceable(food: Entity.Food, location: StorageLocation, x: number, y: number) {
+      let placeable = true;
+
+      food.placeMaker.forEach((row, i) => {
+        row.forEach((markerCell, j) => {
+          if (markerCell !== null) {
+            let storageCell;
+
+            try {
+              storageCell = location.storage.tileMap[x + i][y + j];
+            } catch (e) {
+            }
+
+            if (storageCell !== Entity.Storage.CELL_AVAILABLE) {
+              placeable = false;
+            }
+          }
+        });
+      });
+
+      return placeable;
     }
 
     endGame() {

@@ -6,14 +6,6 @@
       [1]
     ]
   }, {
-    "name": "Cake",
-    "asset": "cake",
-    "shape": [
-      [1,1],
-      [1,1],
-      [1,1]
-    ]
-  }, {
     "name": "Chicken Leg",
     "asset": "chickenleg",
     "shape": [
@@ -47,6 +39,13 @@
     "asset": "sausage",
     "shape": [
       [1,0],
+      [1,1],
+      [0,1]
+    ]
+  }, {
+    "name": "Banana",
+    "asset": "banana",
+    "shape": [
       [1,1],
       [0,1]
     ]
