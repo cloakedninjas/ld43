@@ -26,5 +26,21 @@
     "shape": [
       [1,1]
     ]
+  }, {
+    "name": "Donuts",
+    "asset": "donut",
+    "shape": [
+      [1,1,1],
+      [1,0,1],
+      [1,1,1]
+    ]
+  }, {
+    "name": "Watermelon",
+    "asset": "watermelon",
+    "shape": [
+      [1,1],
+      [0,1],
+      [1,1]
+    ]
   }
 ]
