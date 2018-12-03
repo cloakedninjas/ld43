@@ -8,6 +8,10 @@ module LD43.Lib {
     constructor(game: Phaser.Game) {
       this.game = game;
 
+      if (localStorage.getItem('ld43-mute') === '1') {
+        game.sound.mute = true;
+      }
+
       this.musicTracks = {
         'title': new Phaser.Sound(game, 'snackrifice-title', 1, true),
         'game': new Phaser.Sound(game, 'snackrifice', 1, true),
