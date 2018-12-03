@@ -16,6 +16,7 @@ module LD43.State {
 
       const json = ['food', 'config'];
       const music = ['snackrifice-title', 'snackrifice', 'snackrifice-end'];
+      const sfx = ['bag', 'bin', 'close-fridge', 'invalid-drop' , 'pick-up', 'put-down', 'valid-drop'];
 
       img.forEach((file) => {
         this.load.image(file, 'assets/images/' + file + '.png');
@@ -29,6 +30,10 @@ module LD43.State {
 
       music.forEach((file) => {
         this.load.audio(file, 'assets/music/' + file + '.mp3');
+      });
+
+      sfx.forEach((file) => {
+        this.load.audio(file, 'assets/sfx/' + file + '.mp3');
       });
 
       json.forEach((file) => {

@@ -292,9 +292,9 @@ module LD43.State {
         }
         else if (this.foodPlaceable) {
           this.placeFood();
+        } else if (this.markerGroup.visible) {
+          this.game.soundManager.playSfx('invalid-drop');
         }
-      } else {
-        // nu-uh SFX
       }
     }
 
@@ -368,6 +368,9 @@ module LD43.State {
       if (!firstTime) {
         this.applyMarkerToStorage(food, food.location, false);
         this.renderPlaceMarkerAt(food.location);
+        this.game.soundManager.playSfx('pick-up');
+      } else {
+        this.game.soundManager.playSfx('bag');
       }
     }
 
@@ -397,6 +400,12 @@ module LD43.State {
 
       this.currentFood = null;
       this.markerGroup.removeAll();
+
+      if (placedInFridge) {
+        this.game.soundManager.playSfx('valid-drop');
+      } else {
+        this.game.soundManager.playSfx('put-down');
+      }
     }
 
     binFood(food: Entity.Food) {
@@ -405,6 +414,8 @@ module LD43.State {
       this.binnedScore.score += food.cellCount * config.discard_penality_per_unit;
       this.currentFood = null;
       food.destroy();
+
+      this.game.soundManager.playSfx('bin');
     }
 
     applyMarkerToStorage(food: Entity.Food, location:StorageLocation, placing: boolean) {
@@ -418,6 +429,7 @@ module LD43.State {
     }
 
     endGame() {
+      this.game.soundManager.playSfx('close-fridge');
       this.game.state.start('scores');
     }
   }

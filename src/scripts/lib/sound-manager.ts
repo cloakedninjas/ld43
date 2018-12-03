@@ -2,6 +2,7 @@ module LD43.Lib {
   export class SoundManager {
     game: Phaser.Game;
     musicTracks: any;
+    sfx: any;
     currentTrack: Phaser.Sound;
 
     constructor(game: Phaser.Game) {
@@ -10,8 +11,16 @@ module LD43.Lib {
       this.musicTracks = {
         'title': new Phaser.Sound(game, 'snackrifice-title', 1, true),
         'game': new Phaser.Sound(game, 'snackrifice', 1, true),
-        'end': new Phaser.Sound(game, 'snackrifice-end', 1, false),
+        'end': new Phaser.Sound(game, 'snackrifice-end', 1),
       };
+
+      this.sfx = {};
+
+      const sfx = ['bag', 'bin', 'close-fridge', 'invalid-drop' , 'pick-up', 'put-down', 'valid-drop'];
+
+      sfx.forEach((file) => {
+        this.sfx[file] = new Phaser.Sound(game, file);
+      }, this);
     }
 
     playMusic(track: string, fadeIn: boolean = false, fadeOutCurrent: boolean = false) {
@@ -32,6 +41,10 @@ module LD43.Lib {
       }
 
       this.currentTrack = newTrack;
+    }
+
+    playSfx(key) {
+      this.sfx[key].play();
     }
   }
 }
