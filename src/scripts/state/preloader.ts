@@ -10,7 +10,7 @@ module LD43.State {
 
       const img = [
         'background_bag', 'background_full_2', 'food_block', 'box_green', 'box_red', 'white_arrow',
-        'end_screen'
+        'end_screen', 'playagain'
       ];
       const food = ['cake', 'chickenleg', 'cupcake', 'milk', 'donut', 'watermelon'];
 

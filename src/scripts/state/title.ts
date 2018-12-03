@@ -7,7 +7,13 @@ module LD43.State {
     bagArea: Phaser.Rectangle;
 
     create() {
-      this.logo = this.game.world.children[0];
+      if (this.game.world.children.length === 0) {
+        this.logo = this.add.sprite(this.game.width / 2, 30, 'title');
+        this.logo.anchor.x = 0.5;
+      } else {
+        this.logo = this.game.world.children[0];
+      }
+
       this.bg = this.add.sprite(0, 0, 'background_bag');
 
       this.arrow = this.add.sprite(400, 610, 'white_arrow');

@@ -377,12 +377,24 @@ module LD43.State {
         });
       });
 
-      if (!firstTime) {
+      if (firstTime) {
+        this.game.soundManager.playSfx('bag');
+      } else {
+
+        // food above should fall
+
+        /*const footprint = food.getFootprint();
+
+        for (let x = food.location.x, endX = food.location.x + footprint.length; x < endX; x++) {
+          food.location.storage.items.forEach((item) => {
+            if (item.passeesThrough()) {
+            }
+          });
+        }*/
+
         this.applyMarkerToStorage(food, food.location, false);
         this.renderPlaceMarkerAt(food.location);
         this.game.soundManager.playSfx('pick-up');
-      } else {
-        this.game.soundManager.playSfx('bag');
       }
     }
 
@@ -461,7 +473,7 @@ module LD43.State {
       }
     }
 
-    binFood(food: Entity.Food) {
+    binFood(food: Entity.Food, endOfGame: boolean = false) {
       const config = this.game.cache.getJSON('config');
       this.binnedScore.qty++;
       this.binnedScore.score += food.cellCount * config.discard_penalty_per_unit;
@@ -469,7 +481,9 @@ module LD43.State {
       this.markerGroup.removeAll(true);
       food.destroy();
 
-      this.game.soundManager.playSfx('bin');
+      if (!endOfGame) {
+        this.game.soundManager.playSfx('bin');
+      }
     }
 
     applyMarkerToStorage(food: Entity.Food, location:StorageLocation, placing: boolean) {
@@ -504,7 +518,7 @@ module LD43.State {
 
       discardStorage.forEach((storage) => {
         storage.items.forEach((food) => {
-          this.binFood(food);
+          this.binFood(food, true);
         }, this);
       }, this);
 
