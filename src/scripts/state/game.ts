@@ -18,7 +18,7 @@ module LD43.State {
       binL: Phaser.Button
     };
     location: number;
-    panTween: Phaser.Tween;
+    changingLocation: boolean;
 
     storage: {
       fridge: {
@@ -67,17 +67,18 @@ module LD43.State {
         binL: new Phaser.Button(game, 1640, 725, buttonSprite, this.panTo.bind(this, Game.LOCATION_FRIDGE), null, null, null, 1)
       };
 
-      for (const button in this.buttons) {
-        let b: Phaser.Button = this.buttons[button];
-        b.events.onInputOver.add(() => {
-          if (this.currentFood !== null && (this.panTween == null || !this.panTween.isRunning)) {
-            b.onInputUp.dispatch();
+      for (const b in this.buttons) {
+        let button: Phaser.Button = this.buttons[b];
+
+        button.events.onInputOver.add(() => {
+          if (this.currentFood !== null && !this.changingLocation) {
+            button.onInputUp.dispatch();
           }
 
         }, this);
 
-        b.anchor.set(0.5);
-        this.add.existing(b);
+        button.anchor.set(0.5);
+        this.add.existing(button);
       }
 
       this.buttons.bagR.alpha = 0;
@@ -156,6 +157,8 @@ module LD43.State {
 
       this.currentFood = null;
       this.location = Game.LOCATION_TABLE;
+      this.changingLocation = false;
+
       this.binnedScore = {
         qty: 0,
         score: 0
@@ -205,6 +208,8 @@ module LD43.State {
     panTo(location: number) {
       let dest;
 
+      this.changingLocation = true;
+
       switch (location) {
         case Game.LOCATION_TABLE:
           dest = {x: 0};
@@ -219,10 +224,15 @@ module LD43.State {
           break;
       }
 
-      this.panTween = this.game.add.tween(this.game.camera).to(dest, 500, Phaser.Easing.Sinusoidal.Out, true);
+      const panDuration = 500;
+      const panTween = this.game.add.tween(this.game.camera).to(dest, panDuration, Phaser.Easing.Sinusoidal.Out, true);
 
-      this.panTween.onComplete.add(() => {
+      panTween.onComplete.add(() => {
         this.location = location;
+      }, this);
+
+      this.game.time.events.add(panDuration + 200, () => {
+        this.changingLocation = false;
       }, this);
     }
 
