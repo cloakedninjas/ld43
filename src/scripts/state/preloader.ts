@@ -12,7 +12,7 @@ module LD43.State {
         'background_bag', 'background_full_2', 'food_block', 'box_green', 'box_red', 'white_arrow',
         'end_screen', 'playagain'
       ];
-      const food = ['cake', 'chickenleg', 'cupcake', 'milk', 'donut', 'watermelon'];
+      const food = ['cake', 'chickenleg', 'cupcake', 'milk', 'donut', 'watermelon', 'sausage'];
 
       const json = ['food', 'config'];
       const music = ['snackrifice-title', 'snackrifice', 'snackrifice-end'];
